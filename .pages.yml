@@ -1,0 +1,24 @@
+media:
+  input: media
+  output: /media
+
+content:
+  - name: pages
+    label: Website Pages
+    type: collection
+    path: content
+    format: yaml
+    fields:
+      - name: title
+        label: Page Title
+        type: string
+        required: true
+      - name: body
+        label: Page Content
+        type: rich-text
+      - name: image
+        label: Page Image
+        type: image
+      - name: link
+        label: Website Link
+        type: string
