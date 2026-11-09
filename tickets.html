@@ -4,15 +4,85 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Buy Event Tickets | La Experiencia Dixeebe</title>
 <meta name="theme-color" content="#0a1b34">
 <link rel="stylesheet" href="style.css">
+
+<style>
+.social-icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 28px;
+  margin: 24px 0 32px;
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 15px;
+  text-decoration: none;
+  transition: transform .2s ease;
+}
+
+.social-icon:hover {
+  transform: scale(1.1);
+}
+
+.facebook-icon {
+  background: #1877f2;
+  color: white;
+  font: bold 52px Arial, sans-serif;
+}
+
+.instagram-icon {
+  background: linear-gradient(
+    45deg,
+    #feda75,
+    #fa7e1e,
+    #d62976,
+    #962fbf,
+    #4f5bd5
+  );
+}
+
+.social-icon svg {
+  display: block;
+}
+
+.event-information {
+  text-align: center;
+  margin: 24px 0;
+}
+
+.event-information p {
+  margin: 8px 0;
+}
+
+.event-presenter {
+  color: #e7b76d;
+  font-size: 23px;
+}
+
+.event-price {
+  color: #e7b76d;
+  font-size: 25px;
+  font-weight: bold;
+}
+</style>
 </head>
 
 <body>
 
 <header class="top">
-  <a class="brand" href="index.html">LA EXPERIENCIA DIXEEBE</a>
+  <a class="brand" href="index.html">
+    LA EXPERIENCIA DIXEEBE
+  </a>
+
   <details class="nav">
     <summary>MENU</summary>
     <nav class="menu" aria-label="Main navigation">
@@ -27,8 +97,12 @@
 
 <main class="content">
 
-  <div class="eyebrow">November 28, 2026</div>
+  <div class="eyebrow">
+    November 28, 2026
+  </div>
+
   <h1>Buy Event Tickets</h1>
+
   <div class="rule"></div>
 
   <p>
@@ -36,24 +110,29 @@
     live music, and mixology at Vista Sión in Sayulita.
   </p>
 
-  <!-- ADDED EVENT INFORMATION -->
-  <div style="text-align:center; margin:24px 0;">
-    <p style="color:#e7b76d; font-size:23px; margin:0 0 14px;">
+  <div class="event-information">
+
+    <p class="event-presenter">
       Presented by La Experiencia Dixeebe
     </p>
-    <p style="margin:7px 0;">
+
+    <p>
       📅 Saturday, November 28, 2026
     </p>
-    <p style="margin:7px 0;">
+
+    <p>
       🕒 Doors open at 7:00 PM
     </p>
-    <p style="color:#e7b76d; font-size:25px; margin:12px 0;">
+
+    <p class="event-price">
       🎟️ $1,000 MXN / $50 USD
     </p>
-  </div>
-  <!-- END ADDED INFORMATION -->
 
-  <section class="panel ticket-panel" aria-label="Ticket QR code coming soon">
+  </div>
+
+  <section class="panel ticket-panel"
+           aria-label="Ticket QR code coming soon">
+
     <h2>Scan to Buy Tickets</h2>
 
     <div class="qr-placeholder">
@@ -64,32 +143,79 @@
     <p class="note">
       The official ticket QR code will be added here shortly.
     </p>
+
   </section>
 
   <h2>Follow the Event</h2>
+
   <p class="muted">
-    Facebook and Instagram links will be available soon.
+    Follow us on Facebook and Instagram for event updates!
   </p>
 
-  <div class="links">
-    <span class="button inactive" aria-disabled="true">
-      Facebook · Coming Soon
-    </span>
-    <span class="button inactive" aria-disabled="true">
-      Instagram · Coming Soon
-    </span>
+  <div class="social-icons">
+
+    <!-- FACEBOOK -->
+    <a
+      class="social-icon facebook-icon"
+      href="https://www.facebook.com/profile.php?id=61592936334487&amp;locale=es_LA"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Visit La Experiencia Dixeebe on Facebook"
+      title="Facebook"
+    >
+      f
+    </a>
+
+    <!-- INSTAGRAM -->
+    <a
+      class="social-icon instagram-icon"
+      href="https://www.instagram.com/la_experiencia_dixeebe/"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Visit La Experiencia Dixeebe on Instagram"
+      title="Instagram"
+    >
+      <svg
+        width="42"
+        height="42"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="white"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="2" y="2"
+              width="20" height="20"
+              rx="6" ry="6"></rect>
+
+        <circle cx="12" cy="12" r="4"></circle>
+
+        <circle cx="18" cy="6"
+                r="1" fill="white"
+                stroke="none"></circle>
+      </svg>
+    </a>
+
   </div>
 
   <p class="note">
     For questions in the meantime, please use our
-    <a class="gold-link" href="contact.html">Contact Us</a> page.
+    <a class="gold-link" href="contact.html">
+      Contact Us
+    </a>
+    page.
   </p>
 
 </main>
 
 <footer>
-  November 28, 2026 · Vista Sión, Sayulita · Fundraiser for Casa Huichol
+  November 28, 2026 · Vista Sión, Sayulita ·
+  Fundraiser for Casa Huichol
 </footer>
+
 <script src="shared-header.js"></script>
+
 </body>
 </html>
