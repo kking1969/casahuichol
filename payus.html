@@ -39,6 +39,7 @@ td button{margin:2px;padding:6px 10px!important}
 </style>
 </head>
 <body>
+
 <header class="top">
 <a class="brand" href="index.html">LA EXPERIENCIA DIXEEBE</a>
 <details class="nav">
@@ -58,11 +59,26 @@ td button{margin:2px;padding:6px 10px!important}
 <p class="muted">Organizer reservation report · Updates automatically every 15 seconds</p>
 
 <section class="stats">
-<div class="stat"><span>Reservations</span><strong id="reservationsCount">—</strong></div>
-<div class="stat"><span>Tickets reserved</span><strong id="ticketsCount">—</strong></div>
-<div class="stat"><span>Expected revenue (MXN)</span><strong id="expected">—</strong></div>
-<div class="stat"><span>Collected (MXN)</span><strong id="collected">—</strong></div>
-<div class="stat"><span>Outstanding (MXN)</span><strong id="outstanding">—</strong></div>
+<div class="stat">
+<span>Reservations</span>
+<strong id="reservationsCount">—</strong>
+</div>
+<div class="stat">
+<span>Tickets reserved</span>
+<strong id="ticketsCount">—</strong>
+</div>
+<div class="stat">
+<span>Expected revenue (MXN)</span>
+<strong id="expected">—</strong>
+</div>
+<div class="stat">
+<span>Collected (MXN)</span>
+<strong id="collected">—</strong>
+</div>
+<div class="stat">
+<span>Outstanding (MXN)</span>
+<strong id="outstanding">—</strong>
+</div>
 </section>
 
 <div class="toolbar">
@@ -78,12 +94,28 @@ td button{margin:2px;padding:6px 10px!important}
 <h2 id="editorTitle">Add Reservation</h2>
 <form id="form">
 <input id="id" type="hidden">
+
 <div class="fields">
-<label>First Name<input id="firstName" required maxlength="100"></label>
-<label>Last Name<input id="lastName" required maxlength="100"></label>
-<label>Email<input id="email" type="email" maxlength="200"></label>
-<label>Phone<input id="phone" maxlength="50"></label>
-<label>Tickets<input id="tickets" type="number" min="1" max="100" required value="1"></label>
+<label>First Name
+<input id="firstName" required maxlength="100">
+</label>
+
+<label>Last Name
+<input id="lastName" required maxlength="100">
+</label>
+
+<label>Email
+<input id="email" type="email" maxlength="200">
+</label>
+
+<label>Phone
+<input id="phone" maxlength="50">
+</label>
+
+<label>Tickets
+<input id="tickets" type="number" min="1" max="100" required value="1">
+</label>
+
 <label>Payment Method
 <select id="paymentMethod">
 <option>WILL CALL - Pay at Door</option>
@@ -93,8 +125,15 @@ td button{margin:2px;padding:6px 10px!important}
 <option>Other</option>
 </select>
 </label>
-<label>Amount Due (MXN)<input id="amountDue" readonly value="1000"></label>
-<label>Amount Collected (MXN)<input id="amountCollected" type="number" min="0" step="0.01" value="0" required></label>
+
+<label>Amount Due (MXN)
+<input id="amountDue" readonly value="1000">
+</label>
+
+<label>Amount Collected (MXN)
+<input id="amountCollected" type="number" min="0" step="0.01" value="0" required>
+</label>
+
 <label>Status
 <select id="status">
 <option>Pending</option>
@@ -103,14 +142,19 @@ td button{margin:2px;padding:6px 10px!important}
 <option>Cancelled</option>
 </select>
 </label>
+
 <label>Checked In
 <select id="checkedIn">
 <option>No</option>
 <option>Yes</option>
 </select>
 </label>
-<label class="wide">Notes<textarea id="notes" maxlength="2000"></textarea></label>
+
+<label class="wide">Notes
+<textarea id="notes" maxlength="2000"></textarea>
+</label>
 </div>
+
 <div class="actions">
 <button class="primary" id="save" type="submit">Save Reservation</button>
 <button id="cancel" type="button">Cancel</button>
@@ -150,7 +194,10 @@ td button{margin:2px;padding:6px 10px!important}
 const API='https://script.google.com/macros/s/AKfycby8mIEt1e7DYdxbQOFlXzl12vEe1b7B_pIz-gAZ7XthE8dpnO_YipJtotHb6pObPUoxoA/exec';
 const $=id=>document.getElementById(id);
 const money=n=>'$'+Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
-let reservations=[],busy=false,loading=false;
+
+let reservations=[];
+let busy=false;
+let loading=false;
 
 function notice(msg,error=false){
   $('notice').textContent=msg;
@@ -162,7 +209,11 @@ function jsonp(){
     const cb='dixeebeCallback';
     const s=document.createElement('script');
     let done=false;
-    const timer=setTimeout(()=>finish(new Error('Connection timed out')),12000);
+
+    const timer=setTimeout(
+      ()=>finish(new Error('Connection timed out')),
+      12000
+    );
 
     function finish(err,data){
       if(done)return;
@@ -188,9 +239,17 @@ function cell(tr,v){
 }
 
 function render(){
-  const tickets=reservations.reduce((s,r)=>s+Number(r.tickets||0),0);
-  const due=reservations.reduce((s,r)=>s+Number(r.amountDue||0),0);
-  const paid=reservations.reduce((s,r)=>s+Number(r.amountCollected||0),0);
+  const tickets=reservations.reduce(
+    (s,r)=>s+Number(r.tickets||0),0
+  );
+
+  const due=reservations.reduce(
+    (s,r)=>s+Number(r.amountDue||0),0
+  );
+
+  const paid=reservations.reduce(
+    (s,r)=>s+Number(r.amountCollected||0),0
+  );
 
   $('reservationsCount').textContent=reservations.length;
   $('ticketsCount').textContent=tickets;
@@ -239,6 +298,7 @@ function render(){
 
 async function refresh(){
   if(loading||busy)return;
+
   loading=true;
   $('refresh').disabled=true;
 
@@ -263,8 +323,10 @@ async function refresh(){
 
     render();
     notice('Last updated: '+new Date().toLocaleTimeString());
+
   }catch(err){
     notice('Connection problem: '+err.message,true);
+
   }finally{
     loading=false;
     $('refresh').disabled=false;
@@ -283,7 +345,9 @@ function showEditor(r){
     'tickets','paymentMethod','amountCollected',
     'status','checkedIn','notes'
   ]){
-    if(r&&r[id]!==undefined)$(id).value=r[id];
+    if(r&&r[id]!==undefined){
+      $(id).value=r[id];
+    }
   }
 
   if(!r){
@@ -295,7 +359,10 @@ function showEditor(r){
   $('editorTitle').textContent=r?'Edit Reservation':'Add Reservation';
   updateDue();
   $('editor').hidden=false;
-  $('editor').scrollIntoView({behavior:'smooth',block:'start'});
+  $('editor').scrollIntoView({
+    behavior:'smooth',
+    block:'start'
+  });
 }
 
 function editReservation(id){
@@ -303,19 +370,87 @@ function editReservation(id){
   if(r)showEditor(r);
 }
 
-async function post(data){
-  const body=new URLSearchParams(data);
-  await fetch(API,{method:'POST',mode:'no-cors',body});
-  return {submitted:true};
+function delay(ms){
+  return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+// Submit a regular HTML form to Google Apps Script.
+// This avoids the cross-origin fetch/redirect problem.
+function post(data){
+  return new Promise((resolve,reject)=>{
+    const frame=document.createElement('iframe');
+    const name='dixeebe_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+
+    frame.name=name;
+    frame.style.display='none';
+
+    const form=document.createElement('form');
+    form.method='POST';
+    form.action=API;
+    form.target=name;
+    form.style.display='none';
+
+    for(const [key,value] of Object.entries(data)){
+      const input=document.createElement('input');
+      input.type='hidden';
+      input.name=key;
+      input.value=String(value??'');
+      form.appendChild(input);
+    }
+
+    document.body.append(frame,form);
+
+    let finished=false;
+    const timer=setTimeout(()=>finish(),5000);
+
+    function finish(){
+      if(finished)return;
+      finished=true;
+      clearTimeout(timer);
+      form.remove();
+      setTimeout(()=>frame.remove(),3000);
+      resolve({submitted:true});
+    }
+
+    frame.addEventListener('load',finish,{once:true});
+
+    try{
+      form.submit();
+    }catch(err){
+      clearTimeout(timer);
+      form.remove();
+      frame.remove();
+      reject(err);
+    }
+  });
+}
+
+async function verifyChange(check){
+  for(let attempt=0;attempt<5;attempt++){
+    await delay(attempt===0?900:1500);
+
+    try{
+      const data=await jsonp();
+
+      if(data.success&&Array.isArray(data.reservations)){
+        reservations=data.reservations;
+        render();
+
+        if(check(data.reservations)){
+          return true;
+        }
+      }
+    }catch(err){
+      console.warn('Verification attempt failed:',err);
+    }
+  }
+
+  return false;
 }
 
 async function save(ev){
   ev.preventDefault();
   if(busy)return;
-
-  busy=true;
-  $('save').disabled=true;
-  notice('Saving reservation…');
 
   const fields=[
     'id','firstName','lastName','email','phone',
@@ -325,28 +460,70 @@ async function save(ev){
 
   const data={admin_action:'save'};
 
-  for(const f of fields)data[f]=$(f).value;
+  for(const f of fields){
+    data[f]=$(f).value;
+  }
+
+  const existing=reservations.find(r=>r.id===data.id);
+  const previousIds=new Set(reservations.map(r=>r.id));
+
+  busy=true;
+  $('save').disabled=true;
+  notice('Saving reservation…');
 
   try{
     await post(data);
-    $('editor').hidden=true;
-    notice('Save submitted. Refresh to verify it appears in the sheet.');
+
+    const verified=await verifyChange(rows=>{
+      if(data.id){
+        const r=rows.find(x=>x.id===data.id);
+        if(!r)return false;
+
+        return (
+          String(r.firstName)===String(data.firstName) &&
+          String(r.lastName)===String(data.lastName) &&
+          Number(r.tickets)===Number(data.tickets) &&
+          Number(r.amountCollected)===Number(data.amountCollected) &&
+          String(r.status)===String(data.status) &&
+          String(r.checkedIn)===String(data.checkedIn) &&
+          String(r.paymentMethod)===String(data.paymentMethod)
+        );
+      }
+
+      return rows.some(r=>
+        !previousIds.has(r.id) &&
+        String(r.firstName)===String(data.firstName) &&
+        String(r.lastName)===String(data.lastName) &&
+        Number(r.tickets)===Number(data.tickets)
+      );
+    });
+
+    if(verified){
+      $('editor').hidden=true;
+      notice('Reservation saved and verified in Google Sheets.');
+    }else{
+      notice(
+        'Save NOT verified. The change did not appear in Google Sheets. Check the Apps Script doPost execution before trying again.',
+        true
+      );
+    }
+
   }catch(err){
-    notice('Save failed: '+err.message+'. Check your connection and retry.',true);
+    notice('Save failed: '+err.message,true);
+
   }finally{
     busy=false;
     $('save').disabled=false;
   }
-
-  await refresh();
 }
 
 async function deleteReservation(id){
   if(busy)return;
 
   const r=reservations.find(x=>x.id===id);
+  if(!r)return;
 
-  if(!r||!confirm(
+  if(!confirm(
     'Permanently delete '+r.firstName+' '+r.lastName+
     '? This cannot be undone.'
   ))return;
@@ -355,15 +532,30 @@ async function deleteReservation(id){
   notice('Deleting reservation…');
 
   try{
-    await post({admin_action:'delete',id});
-    notice('Delete submitted. Refresh to verify it disappeared from the sheet.');
+    await post({
+      admin_action:'delete',
+      id:id
+    });
+
+    const verified=await verifyChange(
+      rows=>!rows.some(x=>x.id===id)
+    );
+
+    if(verified){
+      notice('Reservation deleted and verified in Google Sheets.');
+    }else{
+      notice(
+        'Delete NOT verified. The reservation is still in Google Sheets. Check the Apps Script doPost execution.',
+        true
+      );
+    }
+
   }catch(err){
     notice('Delete failed: '+err.message,true);
+
   }finally{
     busy=false;
   }
-
-  await refresh();
 }
 
 $('add').onclick=()=>showEditor(null);
@@ -375,7 +567,9 @@ $('refresh').onclick=refresh;
 refresh();
 
 setInterval(()=>{
-  if(!document.hidden&&!busy)refresh();
+  if(!document.hidden&&!busy){
+    refresh();
+  }
 },15000);
 
 })();
