@@ -36,12 +36,46 @@ const API='https://script.google.com/macros/s/AKfycby8mIEt1e7DYdxbQOFlXzl12vEe1b
 const el=id=>document.getElementById(id);
 const money=n=>'$'+Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
 function cell(row,value){const td=document.createElement('td');td.textContent=String(value??'');row.appendChild(td)}
-async function refresh(){
+
+function loadReservations() {
+  return new Promise((resolve, reject) => {
+    const callback = "dixeebeCallback";
+    const script = document.createElement("script");
+    let finished = false;
+
+    const timeout = setTimeout(() => {
+      finish(new Error("Connection timed out"));
+    }, 12000);
+
+    function finish(error, data) {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timeout);
+      delete window[callback];
+      script.remove();
+
+      if (error) reject(error);
+      else resolve(data);
+    }
+
+    window[callback] = data => finish(null, data);
+
+    script.onerror = () => {
+      finish(new Error("Could not load reservation data"));
+    };
+
+    script.src = API +
+      "?callback=" + callback +
+      "&t=" + Date.now();
+
+    document.head.appendChild(script);
+  });
+}
+
+ async function refresh(){
  const button=el('refresh');button.disabled=true;
  try{
-  const response=await fetch(API+'?t='+Date.now(),{cache:'no-store',redirect:'follow'});
-  if(!response.ok)throw new Error('Server returned '+response.status);
-  const data=await response.json();
+ const data=await loadReservations();
   if(!data.success||!Array.isArray(data.reservations))throw new Error(data.error||'Unexpected server response');
   const rows=data.reservations;
   const tickets=rows.reduce((n,r)=>n+Number(r.tickets||0),0);
