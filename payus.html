@@ -1,63 +1,577 @@
+
 <!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0a1b34">
-<title>Buy Event Tickets | La Experiencia Dixeebe</title>
+<title>Ticket Management | La Experiencia Dixeebe</title>
 <link rel="stylesheet" href="style.css">
 <style>
-.event-information{text-align:center;margin:24px 0}.event-information p{margin:8px 0}.event-presenter{color:#e7b76d;font-size:23px}.event-price{color:#e7b76d;font-size:25px;font-weight:bold}
-.ticket-options{max-width:720px;margin:28px auto}.ticket-options .panel{margin:20px 0}.ticket-options h2,.ticket-options h3{color:#e7b76d}
-.ticket-options label.field{display:block;margin:14px 0 6px}.ticket-options input:not([type=radio]),.ticket-options select,.ticket-options textarea{width:100%;box-sizing:border-box;padding:12px;border:1px solid #b78b4d;border-radius:6px;font:inherit;background:#fff;color:#14233a}
-.ticket-options .payment-choice{display:block;padding:14px;border:1px solid rgba(231,183,109,.4);border-radius:8px;margin:10px 0;cursor:pointer}.ticket-options .payment-choice input{margin-right:9px;accent-color:#e7b76d}.ticket-options .payment-choice:has(input:checked){border-color:#e7b76d;background:rgba(231,183,109,.09)}
-.ticket-total{color:#e7b76d;font-size:25px;font-weight:bold;margin:18px 0}.payment-instructions{padding:15px;border:1px solid rgba(231,183,109,.4);border-radius:8px;margin:18px 0}.payment-instructions[hidden]{display:none}.payment-instructions p{overflow-wrap:anywhere}.ticket-options button{padding:14px 22px;border:0;border-radius:6px;background:#e7b76d;color:#0a1b34;font:700 17px Georgia,serif;cursor:pointer}.ticket-options button:disabled{opacity:.65;cursor:wait}.notice{border:1px solid #e7b76d;border-radius:8px;padding:15px;margin:16px 0}.notice[hidden]{display:none}
+.manager{max-width:1200px;margin:auto;padding:25px 18px 65px}
+.manager h1,.manager h2,.manager h3{color:#e7b76d}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin:22px 0}
+.stat,.panel{border:1px solid #987849;border-radius:10px;background:rgba(231,183,109,.06);padding:17px}
+.stat span{display:block;font-size:.88rem;opacity:.85}
+.stat strong{display:block;color:#e7b76d;font-size:1.7rem;margin-top:8px}
+.toolbar,.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:15px 0}
+.manager button{background:transparent;color:#e7b76d;border:1px solid #e7b76d;border-radius:7px;padding:10px 15px;cursor:pointer}
+.manager a.sheet-link{display:inline-block;text-decoration:none;color:#e7b76d;border:1px solid #e7b76d;border-radius:7px;padding:10px 15px}
+.manager a.sheet-link:hover{background:rgba(231,183,109,.1)}
+.manager button.primary{background:#e7b76d;color:#0a1b34;font-weight:bold}
+.manager button.danger{border-color:#ffa9a9;color:#ffa9a9}
+.manager button:disabled{opacity:.5}
+.table-wrap{overflow:auto;border:1px solid #987849;border-radius:10px}
+table{width:100%;min-width:940px;border-collapse:collapse}
+th,td{text-align:left;padding:12px;border-bottom:1px solid rgba(231,183,109,.22);font-size:.92rem}
+th{color:#e7b76d}
+td button{margin:2px;padding:6px 10px!important}
+.panel{margin:20px 0}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.manager label{display:block;color:#e7b76d;font-size:.9rem}
+.manager input,.manager select,.manager textarea{display:block;width:100%;margin-top:6px;padding:10px;border:1px solid #987849;border-radius:6px;background:#142943;color:white;font:inherit}
+.manager textarea{min-height:70px}
+.wide{grid-column:1/-1}
+.muted{opacity:.75}
+.error{color:#ffb4aa}
+#notice{min-height:1.5em}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
-<header class="top"><a class="brand" href="index.html">LA EXPERIENCIA DIXEEBE</a><details class="nav"><summary>MENU</summary><nav class="menu" aria-label="Main navigation"><a href="index.html">Home</a><a href="casa-huichol.html">Casa Huichol</a><a href="location.html">Location / Directions</a><a href="tickets.html">Buy Event Tickets</a><a href="contact.html">Contact Us</a></nav></details></header>
-<main class="content">
-<div class="eyebrow">November 28, 2026</div><h1>Buy Event Tickets</h1><div class="rule"></div>
-<p>Join us for an evening of ancestral mezcal, live music, and mixology at Vista Sión in Sayulita.</p>
-<div class="event-information"><p class="event-presenter">Presented by La Experiencia Dixeebe</p><p>📅 Saturday, November 28, 2026</p><p>🕒 Doors open at 7:00 PM</p><p class="event-price">🎟️ $1,000 MXN / $50 USD per person</p></div>
-<section class="ticket-options"><div class="panel"><h2>Reserve Your Event Tickets</h2><p>Reserve your tickets first. After submitting, you will receive a confirmation email with your reservation ID and payment instructions. Tickets are confirmed after payment is verified.</p>
-<form id="ticketForm" action="https://script.google.com/macros/s/AKfycby8mIEt1e7DYdxbQOFlXzl12vEe1b7B_pIz-gAZ7XthE8dpnO_YipJtotHb6pObPUoxoA/exec" method="POST" target="reservationResponse">
-<label class="field" for="firstName">First Name</label><input id="firstName" name="first_name" autocomplete="given-name" maxlength="80" required>
-<label class="field" for="lastName">Last Name</label><input id="lastName" name="last_name" autocomplete="family-name" maxlength="80" required>
-<label class="field" for="email">Email Address</label><input id="email" name="email" type="email" autocomplete="email" maxlength="200" required>
-<label class="field" for="phone">Phone / WhatsApp</label><input id="phone" name="phone" type="tel" autocomplete="tel" maxlength="50" required>
-<label class="field" for="guestCount">Number of Guests</label><select id="guestCount" name="number_of_guests" required><option value="1">1 guest</option><option value="2">2 guests</option><option value="3">3 guests</option><option value="4">4 guests</option><option value="5">5 guests</option><option value="6">6 guests</option><option value="7">7 guests</option><option value="8">8 guests</option><option value="9">9 guests</option><option value="10">10 guests</option></select>
-<p class="ticket-total" id="ticketTotal">Total: $1,000 MXN / $50 USD</p>
-<h2>Choose Payment Method</h2>
-<label class="payment-choice"><input type="radio" name="payment_method" value="Kapital Bank SPEI" checked required>Kapital Bank — Bank Transfer (SPEI)</label>
-<label class="payment-choice"><input type="radio" name="payment_method" value="Venmo">Venmo</label>
-<label class="payment-choice"><input type="radio" name="payment_method" value="Wise">Wise</label>
-<div class="payment-instructions" id="bankInfo"><h3>Kapital Bank Transfer (SPEI)</h3><p>Reserve your tickets first. Then transfer the amount due using:</p><p><strong>Account:</strong> <code>008996420036</code><br><strong>CLABE:</strong> <code>128578089964200368</code></p><p>Include your reservation ID as the transfer reference if possible. Admission is confirmed after payment is verified.</p></div>
-<div class="payment-instructions" id="venmoInfo" hidden><h3>Venmo</h3><p>Reserve your tickets first. After receiving your reservation confirmation, use <a class="gold-link" href="https://venmo.com/code?user_id=2849738105815040365&amp;created=1794245424" target="_blank" rel="noopener noreferrer">Pay with Venmo</a>. Include your reservation ID in the payment note. Admission is confirmed after payment is verified.</p></div>
-<div class="payment-instructions" id="wiseInfo" hidden><h3>Wise</h3><p>Reserve your tickets first. After receiving your reservation confirmation, use <a class="gold-link" href="https://wise.com/pay/me/kimn207" target="_blank" rel="noopener noreferrer">Pay with Wise</a>. Include your reservation ID in the payment reference if possible. Admission is confirmed after payment is verified.</p></div>
-<label class="field" for="notes">Additional Guest Names or Notes (optional)</label><textarea id="notes" name="additional_guests_or_notes" rows="3" maxlength="1500"></textarea>
-<p class="note">Please enter the first and last name you'll use at check-in. Your confirmation email will include your reservation ID, payment instructions, number of tickets, and total due.</p>
-<button id="submitButton" type="submit">Submit Reservation</button>
-<p id="submitStatus" class="notice" role="status" aria-live="polite" hidden></p>
+
+<header class="top">
+<a class="brand" href="index.html">LA EXPERIENCIA DIXEEBE</a>
+<details class="nav">
+<summary>MENU</summary>
+<nav class="menu" aria-label="Main navigation">
+<a href="index.html">Home</a>
+<a href="tickets.html">Buy Event Tickets</a>
+<a href="contact.html">Contact Us</a>
+</nav>
+</details>
+</header>
+
+<main class="manager">
+<div class="eyebrow">November 28, 2026 · Vista Sión, Sayulita</div>
+<h1>Ticket Management</h1>
+<div class="rule"></div>
+<p class="muted">Organizer reservation report · Updates automatically every 15 seconds</p>
+
+<section class="stats">
+<div class="stat">
+<span>Reservations</span>
+<strong id="reservationsCount">—</strong>
+</div>
+<div class="stat">
+<span>Tickets reserved</span>
+<strong id="ticketsCount">—</strong>
+</div>
+<div class="stat">
+<span>Expected revenue (MXN)</span>
+<strong id="expected">—</strong>
+</div>
+<div class="stat">
+<span>Collected (MXN)</span>
+<strong id="collected">—</strong>
+</div>
+<div class="stat">
+<span>Outstanding (MXN)</span>
+<strong id="outstanding">—</strong>
+</div>
+</section>
+
+<div class="toolbar">
+<h2>Guest Reservations</h2>
+<button type="button" class="primary" id="add">+ Add Reservation</button>
+<button type="button" id="refresh">Refresh Now</button>
+<a id="sheetLink" class="sheet-link" href="#" target="_blank" rel="noopener noreferrer" hidden>Open Google Sheet ↗</a>
+</div>
+
+<p id="notice" role="status">Connecting…</p>
+
+<section id="editor" class="panel" hidden>
+<h2 id="editorTitle">Add Reservation</h2>
+<form id="form">
+<input id="id" type="hidden">
+
+<div class="fields">
+<label>First Name
+<input id="firstName" required maxlength="100">
+</label>
+
+<label>Last Name
+<input id="lastName" required maxlength="100">
+</label>
+
+<label>Email
+<input id="email" type="email" maxlength="200">
+</label>
+
+<label>Phone
+<input id="phone" maxlength="50">
+</label>
+
+<label>Tickets
+<input id="tickets" type="number" min="1" max="100" required value="1">
+</label>
+
+<label>Payment Method
+<select id="paymentMethod">
+<option>WILL CALL - Pay at Door</option>
+<option>Kapital Bank SPEI</option>
+<option>Venmo</option>
+<option>Cash</option>
+<option>Other</option>
+</select>
+</label>
+
+<label>Amount Due (MXN)
+<input id="amountDue" readonly value="1000">
+</label>
+
+<label>Amount Collected (MXN)
+<input id="amountCollected" type="number" min="0" step="0.01" value="0" required>
+</label>
+
+<label>Status
+<select id="status">
+<option>Pending</option>
+<option>Partial</option>
+<option>Paid</option>
+<option>Cancelled</option>
+</select>
+</label>
+
+<label>Checked In
+<select id="checkedIn">
+<option>No</option>
+<option>Yes</option>
+</select>
+</label>
+
+<label class="wide">Notes
+<textarea id="notes" maxlength="2000"></textarea>
+</label>
+</div>
+
+<div class="actions">
+<button class="primary" id="save" type="submit">Save Reservation</button>
+<button id="cancel" type="button">Cancel</button>
+</div>
 </form>
-<iframe name="reservationResponse" id="reservationResponse" title="Reservation submission response" hidden></iframe>
-</div></section>
-<p class="note">Questions or need to cancel? Please use our <a class="gold-link" href="contact.html">Contact Us</a> page.</p>
+</section>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Guest</th>
+<th>Tickets</th>
+<th>Payment Method</th>
+<th>Due</th>
+<th>Collected</th>
+<th>Status</th>
+<th>Checked In</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="rows">
+<tr><td colspan="8">Loading reservations…</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="muted">Payment totals reflect amounts entered into the reservation sheet. Manual additions do not automatically send email confirmations.</p>
 </main>
+
 <footer>November 28, 2026 · Vista Sión, Sayulita · Fundraiser for Casa Huichol</footer>
+
 <script>
-(function(){
+(()=>{
 'use strict';
-const form=document.getElementById('ticketForm');
-const count=document.getElementById('guestCount');
-const panels={'Kapital Bank SPEI':document.getElementById('bankInfo'),'Venmo':document.getElementById('venmoInfo'),'Wise':document.getElementById('wiseInfo')};
-const status=document.getElementById('submitStatus');
-const button=document.getElementById('submitButton');
-let submitted=false;
-function update(){const n=Number(count.value)||1;document.getElementById('ticketTotal').textContent='Total: $'+(n*1000).toLocaleString('en-US')+' MXN / $'+(n*50).toLocaleString('en-US')+' USD';const method=form.querySelector('input[name="payment_method"]:checked').value;Object.keys(panels).forEach(k=>{panels[k].hidden=k!==method;});}
-count.addEventListener('change',update);form.querySelectorAll('input[name="payment_method"]').forEach(r=>r.addEventListener('change',update));update();
-form.addEventListener('submit',function(){submitted=true;button.disabled=true;status.hidden=false;status.textContent='Sending your reservation request… Please do not submit twice.';setTimeout(function(){if(button.disabled){button.disabled=false;status.textContent='Your request was sent for processing. Please check your email (including spam) for the reservation summary. If you do not receive one, contact the organizer before submitting again.';}},10000);});
-document.getElementById('reservationResponse').addEventListener('load',function(){if(!submitted)return;button.disabled=false;status.hidden=false;status.textContent='Your request was sent for processing. Check your email for a reservation summary. If no email arrives, contact the organizer before trying again.';});
+
+const API='https://script.google.com/macros/s/AKfycby8mIEt1e7DYdxbQOFlXzl12vEe1b7B_pIz-gAZ7XthE8dpnO_YipJtotHb6pObPUoxoA/exec';
+const $=id=>document.getElementById(id);
+const money=n=>'$'+Number(n||0).toLocaleString('en-US',{maximumFractionDigits:2});
+
+let reservations=[];
+let busy=false;
+let loading=false;
+
+function notice(msg,error=false){
+  $('notice').textContent=msg;
+  $('notice').className=error?'error':'';
+}
+
+function jsonp(){
+  return new Promise((resolve,reject)=>{
+    const cb='dixeebeCallback';
+    const s=document.createElement('script');
+    let done=false;
+
+    const timer=setTimeout(
+      ()=>finish(new Error('Connection timed out')),
+      12000
+    );
+
+    function finish(err,data){
+      if(done)return;
+      done=true;
+      clearTimeout(timer);
+      delete window[cb];
+      s.remove();
+      err?reject(err):resolve(data);
+    }
+
+    window[cb]=data=>finish(null,data);
+    s.onerror=()=>finish(new Error('Could not load reservation data'));
+    s.src=API+'?callback='+cb+'&t='+Date.now();
+    document.head.appendChild(s);
+  });
+}
+
+function cell(tr,v){
+  const td=document.createElement('td');
+  td.textContent=String(v??'');
+  tr.appendChild(td);
+  return td;
+}
+
+function render(){
+  const tickets=reservations.reduce(
+    (s,r)=>s+Number(r.tickets||0),0
+  );
+
+  const due=reservations.reduce(
+    (s,r)=>s+Number(r.amountDue||0),0
+  );
+
+  const paid=reservations.reduce(
+    (s,r)=>s+Number(r.amountCollected||0),0
+  );
+
+  $('reservationsCount').textContent=reservations.length;
+  $('ticketsCount').textContent=tickets;
+  $('expected').textContent=money(due);
+  $('collected').textContent=money(paid);
+  $('outstanding').textContent=money(Math.max(0,due-paid));
+
+  const tbody=$('rows');
+  tbody.replaceChildren();
+
+  if(!reservations.length){
+    const tr=document.createElement('tr');
+    const td=cell(tr,'No reservations yet.');
+    td.colSpan=8;
+    tbody.appendChild(tr);
+    return;
+  }
+
+  for(const r of reservations){
+    const tr=document.createElement('tr');
+
+    cell(tr,(r.firstName||'')+' '+(r.lastName||''));
+    cell(tr,r.tickets);
+    cell(tr,r.paymentMethod);
+    cell(tr,money(r.amountDue));
+    cell(tr,money(r.amountCollected));
+    cell(tr,r.status);
+    cell(tr,r.checkedIn);
+
+    const td=document.createElement('td');
+
+    const edit=document.createElement('button');
+    edit.textContent='Edit';
+    edit.onclick=()=>editReservation(r.id);
+
+    const del=document.createElement('button');
+    del.textContent='Delete';
+    del.className='danger';
+    del.onclick=()=>deleteReservation(r.id);
+
+    td.append(edit,del);
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  }
+}
+
+async function refresh(){
+  if(loading||busy)return;
+
+  loading=true;
+  $('refresh').disabled=true;
+
+  try{
+    const data=await jsonp();
+
+    if(!data.success||!Array.isArray(data.reservations)){
+      throw new Error(data.error||'Invalid server response');
+    }
+
+    reservations=data.reservations;
+
+    const sheetLink=$('sheetLink');
+
+    if(
+      typeof data.sheetUrl==='string' &&
+      /^https:\/\/docs\.google\.com\/spreadsheets\//.test(data.sheetUrl)
+    ){
+      sheetLink.href=data.sheetUrl;
+      sheetLink.hidden=false;
+    }
+
+    render();
+    notice('Last updated: '+new Date().toLocaleTimeString());
+
+  }catch(err){
+    notice('Connection problem: '+err.message,true);
+
+  }finally{
+    loading=false;
+    $('refresh').disabled=false;
+  }
+}
+
+function updateDue(){
+  $('amountDue').value=Number($('tickets').value||0)*1000;
+}
+
+function showEditor(r){
+  $('form').reset();
+
+  for(const id of [
+    'id','firstName','lastName','email','phone',
+    'tickets','paymentMethod','amountCollected',
+    'status','checkedIn','notes'
+  ]){
+    if(r&&r[id]!==undefined){
+      $(id).value=r[id];
+    }
+  }
+
+  if(!r){
+    $('id').value='';
+    $('tickets').value=1;
+    $('amountCollected').value=0;
+  }
+
+  $('editorTitle').textContent=r?'Edit Reservation':'Add Reservation';
+  updateDue();
+  $('editor').hidden=false;
+  $('editor').scrollIntoView({
+    behavior:'smooth',
+    block:'start'
+  });
+}
+
+function editReservation(id){
+  const r=reservations.find(x=>x.id===id);
+  if(r)showEditor(r);
+}
+
+function delay(ms){
+  return new Promise(resolve=>setTimeout(resolve,ms));
+}
+
+// Submit a regular HTML form to Google Apps Script.
+// This avoids the cross-origin fetch/redirect problem.
+function post(data){
+  return new Promise((resolve,reject)=>{
+    const frame=document.createElement('iframe');
+    const name='dixeebe_post_'+Date.now()+'_'+Math.floor(Math.random()*100000);
+
+    frame.name=name;
+    frame.style.display='none';
+
+    const form=document.createElement('form');
+    form.method='POST';
+    form.action=API;
+    form.target=name;
+    form.style.display='none';
+
+    for(const [key,value] of Object.entries(data)){
+      const input=document.createElement('input');
+      input.type='hidden';
+      input.name=key;
+      input.value=String(value??'');
+      form.appendChild(input);
+    }
+
+    document.body.append(frame,form);
+
+    let finished=false;
+    const timer=setTimeout(()=>finish(),5000);
+
+    function finish(){
+      if(finished)return;
+      finished=true;
+      clearTimeout(timer);
+      form.remove();
+      setTimeout(()=>frame.remove(),3000);
+      resolve({submitted:true});
+    }
+
+    frame.addEventListener('load',finish,{once:true});
+
+    try{
+      form.submit();
+    }catch(err){
+      clearTimeout(timer);
+      form.remove();
+      frame.remove();
+      reject(err);
+    }
+  });
+}
+
+async function verifyChange(check){
+  for(let attempt=0;attempt<5;attempt++){
+    await delay(attempt===0?900:1500);
+
+    try{
+      const data=await jsonp();
+
+      if(data.success&&Array.isArray(data.reservations)){
+        reservations=data.reservations;
+        render();
+
+        if(check(data.reservations)){
+          return true;
+        }
+      }
+    }catch(err){
+      console.warn('Verification attempt failed:',err);
+    }
+  }
+
+  return false;
+}
+
+async function save(ev){
+  ev.preventDefault();
+  if(busy)return;
+
+  const fields=[
+    'id','firstName','lastName','email','phone',
+    'tickets','paymentMethod','amountCollected',
+    'status','checkedIn','notes'
+  ];
+
+  const data={admin_action:'save'};
+
+  for(const f of fields){
+    data[f]=$(f).value;
+  }
+
+  const existing=reservations.find(r=>r.id===data.id);
+  const previousIds=new Set(reservations.map(r=>r.id));
+
+  busy=true;
+  $('save').disabled=true;
+  notice('Saving reservation…');
+
+  try{
+    await post(data);
+
+    const verified=await verifyChange(rows=>{
+      if(data.id){
+        const r=rows.find(x=>x.id===data.id);
+        if(!r)return false;
+
+        return (
+          String(r.firstName)===String(data.firstName) &&
+          String(r.lastName)===String(data.lastName) &&
+          Number(r.tickets)===Number(data.tickets) &&
+          Number(r.amountCollected)===Number(data.amountCollected) &&
+          String(r.status)===String(data.status) &&
+          String(r.checkedIn)===String(data.checkedIn) &&
+          String(r.paymentMethod)===String(data.paymentMethod)
+        );
+      }
+
+      return rows.some(r=>
+        !previousIds.has(r.id) &&
+        String(r.firstName)===String(data.firstName) &&
+        String(r.lastName)===String(data.lastName) &&
+        Number(r.tickets)===Number(data.tickets)
+      );
+    });
+
+    if(verified){
+      $('editor').hidden=true;
+      notice('Reservation saved and verified in Google Sheets.');
+    }else{
+      notice(
+        'Save NOT verified. The change did not appear in Google Sheets. Check the Apps Script doPost execution before trying again.',
+        true
+      );
+    }
+
+  }catch(err){
+    notice('Save failed: '+err.message,true);
+
+  }finally{
+    busy=false;
+    $('save').disabled=false;
+  }
+}
+
+async function deleteReservation(id){
+  if(busy)return;
+
+  const r=reservations.find(x=>x.id===id);
+  if(!r)return;
+
+  if(!confirm(
+    'Permanently delete '+r.firstName+' '+r.lastName+
+    '? This cannot be undone.'
+  ))return;
+
+  busy=true;
+  notice('Deleting reservation…');
+
+  try{
+    await post({
+      admin_action:'delete',
+      id:id
+    });
+
+    const verified=await verifyChange(
+      rows=>!rows.some(x=>x.id===id)
+    );
+
+    if(verified){
+      notice('Reservation deleted and verified in Google Sheets.');
+    }else{
+      notice(
+        'Delete NOT verified. The reservation is still in Google Sheets. Check the Apps Script doPost execution.',
+        true
+      );
+    }
+
+  }catch(err){
+    notice('Delete failed: '+err.message,true);
+
+  }finally{
+    busy=false;
+  }
+}
+
+$('add').onclick=()=>showEditor(null);
+$('cancel').onclick=()=>$('editor').hidden=true;
+$('tickets').oninput=updateDue;
+$('form').addEventListener('submit',save);
+$('refresh').onclick=refresh;
+
+refresh();
+
+setInterval(()=>{
+  if(!document.hidden&&!busy){
+    refresh();
+  }
+},15000);
+
 })();
 </script>
 <script src="shared-header.js"></script>
