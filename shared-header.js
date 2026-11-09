@@ -2,14 +2,15 @@
 (function () {
   "use strict";
 
-  // Shared header for all La Experiencia Dixeebe pages.
-  // This replaces only the header, not the page content.
-
   const css = document.createElement("style");
 
   css.textContent = `
+    /* SHARED HEADER */
+
     .dixeebe-header,
-    .dixeebe-header * {
+    .dixeebe-header *,
+    .dixeebe-social,
+    .dixeebe-social * {
       box-sizing: border-box;
     }
 
@@ -77,6 +78,8 @@
       line-height: 1.3;
     }
 
+    /* MENU */
+
     .dixeebe-nav {
       position: relative;
       flex-shrink: 0;
@@ -131,6 +134,66 @@
       background: #29405c;
     }
 
+    /* FOLLOW US SECTION */
+
+    .dixeebe-social {
+      text-align: center;
+      padding: 20px 15px 22px;
+      background: transparent;
+    }
+
+    .dixeebe-social-title {
+      color: #e1ae62;
+      font: bold 15px Arial, sans-serif;
+      letter-spacing: 0.12em;
+      margin: 0 0 13px;
+    }
+
+    .dixeebe-social-links {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .dixeebe-social-icon {
+      width: 42px;
+      height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+
+    .dixeebe-social-icon:hover {
+      transform: scale(1.1);
+    }
+
+    .dixeebe-facebook {
+      background: #1877f2;
+      color: white;
+      font: bold 32px Arial, sans-serif;
+    }
+
+    .dixeebe-instagram {
+      background: linear-gradient(
+        45deg,
+        #feda75,
+        #fa7e1e,
+        #d62976,
+        #962fbf,
+        #4f5bd5
+      );
+    }
+
+    .dixeebe-instagram svg {
+      display: block;
+    }
+
+    /* MOBILE LAYOUT */
+
     @media (max-width: 650px) {
       .dixeebe-header {
         padding: 10px;
@@ -162,6 +225,10 @@
         padding: 8px 10px;
         font-size: 12px;
       }
+
+      .dixeebe-social {
+        padding: 16px 10px;
+      }
     }
 
     @media (max-width: 380px) {
@@ -184,7 +251,10 @@
     }
   `;
 
-  function installHeader() {
+  function installSharedElements() {
+
+    /* REPLACE EXISTING HEADER */
+
     const existingHeader = document.querySelector(
       "header.top, header.topbar, header.dixeebe-header"
     );
@@ -245,6 +315,103 @@
     } else {
       document.body.prepend(header);
     }
+
+    /* REMOVE OLD LARGE SOCIAL ICONS ON TICKETS PAGE */
+
+    const oldSocialIcons = document.querySelector(
+      ".social-icons"
+    );
+
+    if (oldSocialIcons) {
+      const previousText = oldSocialIcons.previousElementSibling;
+      const previousHeading = previousText
+        ? previousText.previousElementSibling
+        : null;
+
+      if (
+        previousHeading &&
+        previousHeading.tagName === "H2" &&
+        previousHeading.textContent.trim() === "Follow the Event"
+      ) {
+        previousHeading.remove();
+        previousText.remove();
+      }
+
+      oldSocialIcons.remove();
+    }
+
+    /* ADD FOLLOW US TO EVERY PAGE */
+
+    if (!document.querySelector(".dixeebe-social")) {
+
+      const social = document.createElement("section");
+      social.className = "dixeebe-social";
+      social.setAttribute("aria-label", "Follow Us");
+
+      social.innerHTML = `
+        <div class="dixeebe-social-title">
+          FOLLOW US
+        </div>
+
+        <div class="dixeebe-social-links">
+
+          <a
+            class="dixeebe-social-icon dixeebe-facebook"
+            href="https://www.facebook.com/profile.php?id=61592936334487&amp;locale=es_LA"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow us on Facebook"
+            title="Facebook"
+          >f</a>
+
+          <a
+            class="dixeebe-social-icon dixeebe-instagram"
+            href="https://www.instagram.com/la_experiencia_dixeebe/"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Follow us on Instagram"
+            title="Instagram"
+          >
+            <svg
+              width="27"
+              height="27"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              aria-hidden="true"
+            >
+              <rect
+                x="2" y="2"
+                width="20" height="20"
+                rx="6" ry="6"
+              ></rect>
+
+              <circle
+                cx="12" cy="12" r="4"
+              ></circle>
+
+              <circle
+                cx="18" cy="6" r="1"
+                fill="white"
+                stroke="none"
+              ></circle>
+            </svg>
+          </a>
+
+        </div>
+      `;
+
+      const footer = document.querySelector("footer");
+
+      if (footer) {
+        footer.before(social);
+      } else {
+        document.body.appendChild(social);
+      }
+    }
   }
 
   document.head.appendChild(css);
@@ -252,10 +419,11 @@
   if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
-      installHeader,
+      installSharedElements,
       { once: true }
     );
   } else {
-    installHeader();
+    installSharedElements();
   }
+
 })();
