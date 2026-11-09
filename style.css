@@ -39,3 +39,59 @@ footer{text-align:center;color:#b7a68f;font:12px Arial,sans-serif;padding:18px}
 .inactive{opacity:.55;cursor:not-allowed}
 .gold-link{color:#e7b76d}
 .flyer{max-height:calc((100dvh - 80px)*1.15);width:auto;max-width:100%;height:auto}
+
+/* Homepage layout */
+.home {
+  padding: 0 14px 28px;
+}
+
+.home .flyer {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: calc((100dvh - 80px) * 1.15);
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* Floating menu on homepage */
+.home-nav {
+  position: fixed;
+  top: 16px;
+  right: 24px;
+  z-index: 1000;
+}
+
+.home-nav summary {
+  background: #0a1b34;
+  border: 1px solid #b99159;
+  border-radius: 5px;
+  padding: 12px 20px;
+  color: #edc486;
+  font: 600 15px Arial, sans-serif;
+  box-shadow: 0 3px 12px #0005;
+}
+
+.home-nav .menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 230px;
+  background: #102542;
+  border: 1px solid #b99159;
+  border-radius: 7px;
+  padding: 8px;
+  box-shadow: 0 12px 30px #0008;
+}
+
+@media (max-width: 520px) {
+  .home-nav {
+    top: 10px;
+    right: 10px;
+  }
+
+  .home-nav .menu {
+    min-width: 210px;
+  }
+}
