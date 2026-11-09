@@ -38,3 +38,4 @@ footer{text-align:center;color:#b7a68f;font:12px Arial,sans-serif;padding:18px}
 .qr-placeholder small{font-size:14px;font-weight:400;letter-spacing:normal;color:#d4c2a7}
 .inactive{opacity:.55;cursor:not-allowed}
 .gold-link{color:#e7b76d}
+.flyer{max-height:calc((100dvh - 80px)*1.15);width:auto;max-width:100%;height:auto}
