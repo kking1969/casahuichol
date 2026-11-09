@@ -91,6 +91,96 @@ footer{text-align:center;color:#b7a68f;font:12px Arial,sans-serif;padding:18px}
     right: 10px;
   }
 
+/* HOMEPAGE FIX - menu and large flyer */
+
+body:has(.home-nav) {
+  margin: 0;
+}
+
+body:has(.home-nav) .home {
+  padding: 0 12px 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body:has(.home-nav) .flyer {
+  display: block;
+  width: min(100%, 900px);
+  max-width: 900px;
+  max-height: none;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+/* Small floating menu in upper-right */
+body:has(.home-nav) .home-nav {
+  position: fixed;
+  top: 12px;
+  right: 20px;
+  left: auto;
+  width: auto;
+  height: auto;
+  display: block;
+  z-index: 9999;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+body:has(.home-nav) .home-nav summary {
+  display: block;
+  width: auto;
+  padding: 12px 20px;
+  background: #0a1b34;
+  border: 1px solid #b99159;
+  border-radius: 5px;
+  color: #edc486;
+  font: bold 15px Arial, sans-serif;
+  cursor: pointer;
+}
+
+/* Dropdown directly below MENU */
+body:has(.home-nav) .home-nav .menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  left: auto;
+  width: 235px;
+  min-width: 235px;
+  padding: 8px;
+  background: #102542;
+  border: 1px solid #b99159;
+  border-radius: 6px;
+  box-shadow: 0 12px 30px #0008;
+}
+
+body:has(.home-nav) .home-nav:not([open]) .menu {
+  display: none;
+}
+
+body:has(.home-nav) .home-nav .menu a {
+  display: block;
+  padding: 12px;
+  color: #f7e8d0;
+  text-decoration: none;
+  font: 15px Arial, sans-serif;
+}
+
+@media (max-width: 520px) {
+  body:has(.home-nav) .home-nav {
+    top: 8px;
+    right: 8px;
+  }
+
+  body:has(.home-nav) .flyer {
+    width: 100%;
+  }
+}
+
   .home-nav .menu {
     min-width: 210px;
   }
