@@ -1,1 +1,1 @@
-.flyer{max-height:calc(100dvh - 70px)}
+.flyer{display:block;width:100%;max-width:650px;height:auto;object-fit:contain}
