@@ -7,15 +7,22 @@
 <meta name="theme-color" content="#0a1b34">
 <title>Buy Event Tickets | La Experiencia Dixeebe</title>
 <link rel="stylesheet" href="style.css">
+
 <style>
 .event-information{text-align:center;margin:24px 0}
 .event-information p{margin:8px 0}
 .event-presenter{color:#e7b76d;font-size:23px}
 .event-price{color:#e7b76d;font-size:25px;font-weight:bold}
+
 .ticket-options{max-width:720px;margin:28px auto}
 .ticket-options .panel{margin:20px 0}
 .ticket-options h2,.ticket-options h3{color:#e7b76d}
-.ticket-options label.field{display:block;margin:14px 0 6px}
+
+.ticket-options label.field{
+  display:block;
+  margin:14px 0 6px
+}
+
 .ticket-options input:not([type=radio]),
 .ticket-options select,
 .ticket-options textarea{
@@ -28,6 +35,7 @@
   background:#fff;
   color:#14233a
 }
+
 .ticket-options .payment-choice{
   display:block;
   padding:14px;
@@ -36,28 +44,34 @@
   margin:10px 0;
   cursor:pointer
 }
+
 .ticket-options .payment-choice input{
   margin-right:9px;
   accent-color:#e7b76d
 }
+
 .ticket-options .payment-choice:has(input:checked){
   border-color:#e7b76d;
   background:rgba(231,183,109,.09)
 }
+
 .ticket-total{
   color:#e7b76d;
   font-size:25px;
   font-weight:bold;
   margin:18px 0
 }
+
 .payment-instructions{
   padding:15px;
   border:1px solid rgba(231,183,109,.4);
   border-radius:8px;
   margin:18px 0
 }
+
 .payment-instructions[hidden]{display:none}
 .payment-instructions p{overflow-wrap:anywhere}
+
 .ticket-options button{
   padding:14px 22px;
   border:0;
@@ -67,17 +81,48 @@
   font:700 17px Georgia,serif;
   cursor:pointer
 }
+
 .ticket-options button:disabled{
   opacity:.65;
   cursor:wait
 }
+
 .notice{
   border:1px solid #e7b76d;
   border-radius:8px;
   padding:15px;
   margin:16px 0
 }
+
 .notice[hidden]{display:none}
+
+.experience-includes{
+  max-width:720px;
+  margin:28px auto;
+  padding:24px;
+  border:1px solid rgba(231,183,109,.4);
+  border-radius:10px;
+  background:rgba(231,183,109,.05)
+}
+
+.experience-includes h2{
+  color:#e7b76d;
+  text-align:center;
+  margin-top:0
+}
+
+.experience-includes .experience-item{
+  margin:18px 0;
+  line-height:1.65
+}
+
+.experience-includes .experience-ending{
+  text-align:center;
+  color:#e7b76d;
+  font-size:19px;
+  font-weight:bold;
+  margin-top:24px
+}
 </style>
 </head>
 
@@ -115,8 +160,8 @@
   </div>
 
   <p>
-    Join us for an evening of ancestral mezcal, live music,
-    and mixology at Vista Sión in Sayulita.
+    Join us for an evening of ancestral mezcal,
+    live music, and mixology at Vista Sión in Sayulita.
   </p>
 
   <div class="event-information">
@@ -126,6 +171,50 @@
       🎟️ $1,000 MXN / $50 USD per person
     </p>
   </div>
+
+  <!-- EVENT EXPERIENCE DETAILS -->
+
+  <section class="experience-includes">
+
+    <h2>A Taste of the Experience</h2>
+
+    <p style="text-align:center;">
+      Your event ticket includes three special tastes
+      to kick off an unforgettable evening!
+    </p>
+
+    <div class="experience-item">
+      🍹 <strong>Your choice of one handcrafted cocktail
+      or an ice-cold beer</strong> — the perfect way
+      to kick off the evening.
+    </div>
+
+    <div class="experience-item">
+      🥃 <strong>One shot of freshly distilled
+      ancestral mezcal</strong> — straight from our
+      live still. A rare opportunity to taste mezcal
+      at its freshest!
+    </div>
+
+    <div class="experience-item">
+      🌮 <strong>One handmade quesadilla with
+      chapulines</strong> — a delicious taste of
+      traditional Mexican cuisine, generously
+      provided by our sponsor,
+      <strong>Restaurante Anita</strong>.
+    </div>
+
+    <p class="experience-ending">
+      Three authentic tastes, one unforgettable evening!
+    </p>
+
+    <p style="text-align:center;">
+      And that's just the beginning — enjoy live music,
+      culture, community, and the magic of mezcal
+      in Sayulita.
+    </p>
+
+  </section>
 
   <section class="ticket-options">
     <div class="panel">
@@ -138,22 +227,22 @@
       </p>
 
       <p>
-        When you arrive at the event, please check in at the
-        front desk and provide the first and last name used
-        for your reservation.
+        When you arrive, simply check in at the
+        <strong>front entrance</strong> using the first
+        and last name on your reservation. You'll receive
+        your event ticket and be ready to enjoy the evening!
       </p>
 
       <p>
-        You will receive a ticket that can be used for event
-        entry, small bites, and a starter drink.
-      </p>
-
-      <p>
-        Thank you for supporting Casa Huichol and its mission
-        of supporting Wixárika families, culture, and
-        traditions. We look forward to spending the evening
-        together as we celebrate the start of the season,
-        our community, and a night of fun!
+        Thank you for supporting
+        <a class="gold-link" href="casa-huichol.html">
+          Casa Huichol
+        </a>
+        and its mission of supporting Wixárika families,
+        culture, and traditions. We look forward to
+        spending the evening together as we celebrate
+        the start of the season, our community,
+        and a night of fun!
       </p>
 
       <form
@@ -274,6 +363,7 @@
         </label>
 
         <!-- KAPITAL BANK DETAILS -->
+
         <div class="payment-instructions" id="bankInfo">
 
           <h3>Kapital Bank Transfer (SPEI)</h3>
@@ -293,13 +383,15 @@
 
           <p>
             Please use your first and last name as the
-            transfer reference so we can identify your payment.
-            Admission is confirmed after payment is verified.
+            transfer reference so we can identify your
+            payment. Admission is confirmed after
+            payment is verified.
           </p>
 
         </div>
 
         <!-- VENMO DETAILS -->
+
         <div
           class="payment-instructions"
           id="venmoInfo"
@@ -327,14 +419,15 @@
           </p>
 
           <p>
-            Include your first and last name in the payment
-            note. Admission is confirmed after payment
-            is verified.
+            Include your first and last name in the
+            payment note. Admission is confirmed after
+            payment is verified.
           </p>
 
         </div>
 
         <!-- WISE DETAILS -->
+
         <div
           class="payment-instructions"
           id="wiseInfo"
@@ -362,9 +455,9 @@
           </p>
 
           <p>
-            Include your first and last name in the payment
-            reference if possible. Admission is confirmed
-            after payment is verified.
+            Include your first and last name in the
+            payment reference if possible. Admission
+            is confirmed after payment is verified.
           </p>
 
         </div>
@@ -380,10 +473,10 @@
         ></textarea>
 
         <p class="note">
-          Please enter the first and last name you'll use
-          at check-in. Your confirmation email will include
-          your reservation details, payment instructions,
-          number of tickets, and total due.
+          Please enter the first and last name you'll
+          use at check-in. Your confirmation email will
+          include your reservation details, payment
+          instructions, number of tickets, and total due.
         </p>
 
         <button id="submitButton" type="submit">
@@ -440,6 +533,7 @@
 
   const status=document.getElementById('submitStatus');
   const button=document.getElementById('submitButton');
+
   let submitted=false;
 
   function update(){
@@ -471,6 +565,7 @@
     submitted=true;
     button.disabled=true;
     status.hidden=false;
+
     status.textContent=
       'Sending your reservation request… Please do not submit twice.';
 
@@ -489,6 +584,7 @@
 
       button.disabled=false;
       status.hidden=false;
+
       status.textContent=
         'Your request was sent for processing. Check your email for a reservation summary. If no email arrives, contact the organizer before trying again.';
     });
