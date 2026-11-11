@@ -222,9 +222,10 @@
       <h2>Reserve Your Event Tickets</h2>
 
       <p>
-        Choose your payment method, complete or initiate your payment,
-        then submit your reservation. We will email you a reservation
-        summary and confirm your tickets after verifying payment.
+        Choose your payment method and reserve your tickets.
+        Please make your payment immediately after submitting the form.
+        We will email you a reservation summary, then confirm your tickets
+        once payment has been verified.
       </p>
 
 
@@ -308,7 +309,7 @@
         </p>
 
         <h2>Choose Payment Method</h2>
-        <p>Select how you will pay, then follow the instructions below.</p>
+        <p>Select how you will pay. Payment instructions will appear below and will also be included in your reservation email.</p>
 
         <label class="payment-choice">
           <input
@@ -389,7 +390,7 @@
             Please include your first and last name in the payment note
             so we can match your payment to your reservation.
           </p>
-          <p>After sending payment, return to this page, check the payment acknowledgment box, and submit your reservation.</p>
+          <p>You can complete your payment immediately after submitting your reservation.</p>
         </div>
 
         <!-- WISE DETAILS -->
@@ -406,7 +407,7 @@
             Please include your first and last name in the payment reference
             so we can match your payment to your reservation.
           </p>
-          <p>After sending payment, return to this page, check the payment acknowledgment box, and submit your reservation.</p>
+          <p>You can complete your payment immediately after submitting your reservation.</p>
         </div>
 
         <label class="field" for="notes">
@@ -433,16 +434,16 @@
             value="Yes"
             required
           >
-          I confirm that I have initiated or completed my payment
-          using the selected payment method.
+          I confirm that I will make my payment using the selected
+          payment method immediately after submitting this reservation.
         </label>
         <p class="note">
-          Checking this box does not confirm receipt of funds.
-          Your tickets will be confirmed after we verify your payment.
+          Once your payment has been verified, you should receive an email
+          confirming your tickets within 24 hours.
         </p>
 
         <button id="submitButton" type="submit">
-          Submit Reservation
+          Reserve My Tickets
         </button>
 
         <p
@@ -539,7 +540,7 @@
       if(button.disabled){
         button.disabled=false;
         status.textContent=
-          'Your request was sent for processing. Please check your email (including spam) for the reservation summary. If you do not receive one, contact the organizer before submitting again.';
+          'Your reservation was sent for processing. Please make your payment now using your selected method. Check your email (including spam) for your reservation summary. If it does not arrive, contact us before submitting again.';
       }
     },10000);
   });
@@ -552,7 +553,7 @@
       status.hidden=false;
 
       status.textContent=
-        'Your request was sent for processing. Check your email for a reservation summary. If no email arrives, contact the organizer before trying again.';
+        'Your reservation was sent for processing. Please make your payment now using your selected method. Check your email for the reservation summary. If no email arrives, contact us before trying again.';
     });
 
 })();
