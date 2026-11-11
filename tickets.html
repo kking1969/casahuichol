@@ -484,78 +484,137 @@
 <script>
 (function(){
   'use strict';
-
   const form=document.getElementById('ticketForm');
+  const iframe=document.getElementById('reservationResponse');
   const count=document.getElementById('guestCount');
-
+  const status=document.getElementById('submitStatus');
+  const button=document.getElementById('submitButton');
+  const panel=form.closest('.panel');
+  const methods=['Kapital Bank SPEI','Venmo','Wise'];
   const panels={
     'Kapital Bank SPEI':document.getElementById('bankInfo'),
     'Venmo':document.getElementById('venmoInfo'),
     'Wise':document.getElementById('wiseInfo')
   };
-
-  const status=document.getElementById('submitStatus');
-  const button=document.getElementById('submitButton');
-
-  let submitted=false;
-
+  const thanks=document.createElement('section');
+  thanks.id='afterReservation';
+  thanks.hidden=true;
+  thanks.className='notice';
+  thanks.setAttribute('aria-live','polite');
+  panel.appendChild(thanks);
+  let waiting=false, pendingAction='', reservation=null, pendingMethod='';
+  let timer;
+  const totalText=n=>'Amount to pay: $'+(n*1000).toLocaleString('en-US')+' MXN / $'+(n*50).toLocaleString('en-US')+' USD';
   function update(){
     const n=Number(count.value)||1;
-
-    document.getElementById('ticketTotal').textContent=
-      'Total: $'+(n*1000).toLocaleString('en-US')+
-      ' MXN / $'+(n*50).toLocaleString('en-US')+
-      ' USD';
-
-    const selected=form.querySelector(
-      'input[name="payment_method"]:checked'
-    );
-    const method=selected ? selected.value : null;
-
-    Object.keys(panels).forEach(k=>{
-      panels[k].hidden=k!==method;
-    });
+    document.getElementById('ticketTotal').textContent='Total: $'+(n*1000).toLocaleString('en-US')+' MXN / $'+(n*50).toLocaleString('en-US')+' USD';
+    const selected=form.querySelector('input[name="payment_method"]:checked');
+    methods.forEach(m=>panels[m].hidden=!selected||selected.value!==m);
   }
-
   count.addEventListener('change',update);
-
-  form.querySelectorAll(
-    'input[name="payment_method"]'
-  ).forEach(r=>r.addEventListener('change',function(){
-    document.getElementById('paymentAcknowledged').checked=false;
-    update();
-  }));
-
+  form.querySelectorAll('input[name="payment_method"]').forEach(r=>r.addEventListener('change',update));
   update();
-
-  form.addEventListener('submit',function(){
-    submitted=true;
-    button.disabled=true;
-    status.hidden=false;
-
-    status.textContent=
-      'Sending your reservation request… Please do not submit twice.';
-
-    setTimeout(function(){
-      if(button.disabled){
-        button.disabled=false;
-        status.textContent=
-          'Your reservation was sent for processing. Please make your payment now using your selected method. Check your email (including spam) for your reservation summary. If it does not arrive, contact us before submitting again.';
-      }
-    },10000);
-  });
-
-  document.getElementById('reservationResponse')
-    .addEventListener('load',function(){
-      if(!submitted)return;
-
-      button.disabled=false;
-      status.hidden=false;
-
-      status.textContent=
-        'Your reservation was sent for processing. Please make your payment now using your selected method. Check your email for the reservation summary. If no email arrives, contact us before trying again.';
+  function el(tag,text,className){
+    const node=document.createElement(tag);
+    if(text!==undefined)node.textContent=text;
+    if(className)node.className=className;
+    return node;
+  }
+  function showThanks(){
+    thanks.replaceChildren();
+    thanks.appendChild(el('h2','Thank you, '+reservation.first+'!'));
+    thanks.appendChild(el('p','Your reservation '+reservation.id+' has been received. Please complete your payment now.'));
+    thanks.appendChild(el('p',totalText(reservation.count),'ticket-total'));
+    thanks.appendChild(el('h3','Your selected payment method: '+reservation.method));
+    const details=panels[reservation.method].cloneNode(true);
+    details.removeAttribute('id');
+    details.hidden=false;
+    thanks.appendChild(details);
+    const change=el('button','Change Payment Method');
+    change.type='button';
+    change.style.marginTop='12px';
+    thanks.appendChild(change);
+    const chooser=el('div');
+    chooser.hidden=true;
+    chooser.style.marginTop='12px';
+    const select=el('select');
+    select.setAttribute('aria-label','New payment method');
+    methods.forEach(m=>{
+      const opt=el('option',m);opt.value=m;select.appendChild(opt);
     });
-
+    select.value=reservation.method;
+    chooser.appendChild(select);
+    const save=el('button','Save Payment Method');
+    save.type='button';
+    save.style.marginTop='10px';
+    chooser.appendChild(save);
+    const feedback=el('p','','note');
+    feedback.setAttribute('role','status');
+    chooser.appendChild(feedback);
+    thanks.appendChild(chooser);
+    change.addEventListener('click',()=>{chooser.hidden=!chooser.hidden;});
+    save.addEventListener('click',()=>{
+      if(waiting)return;
+      if(select.value===reservation.method){chooser.hidden=true;return;}
+      pendingMethod=select.value;
+      const f=document.createElement('form');
+      f.method='POST';f.action=form.action;f.target=iframe.name;
+      const fields={action:'change_payment',reservation_id:reservation.id,change_token:reservation.token,payment_method:pendingMethod};
+      Object.keys(fields).forEach(k=>{const input=document.createElement('input');input.type='hidden';input.name=k;input.value=fields[k];f.appendChild(input);});
+      document.body.appendChild(f);
+      waiting=true;pendingAction='change_payment';save.disabled=true;feedback.textContent='Saving your new payment method…';
+      f.submit();f.remove();
+      startTimeout(()=>{save.disabled=false;feedback.textContent='We could not confirm the change. Please try again or contact us.';});
+    });
+    thanks.appendChild(el('p','Please include your name or reservation ID with your payment. Once payment is verified, you should receive a ticket confirmation within 24 hours.'));
+    thanks.appendChild(el('p','Unable to pay? Please contact us as soon as possible so we can assist you or release the tickets for someone else.'));
+    thanks.appendChild(el('p','A reservation summary has been sent to your email.','note'));
+    thanks.hidden=false;
+    thanks.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  function startTimeout(callback){
+    clearTimeout(timer);
+    timer=setTimeout(()=>{if(!waiting)return;waiting=false;callback();},20000);
+  }
+  form.addEventListener('submit',function(){
+    if(waiting)return;
+    waiting=true;pendingAction='reservation';button.disabled=true;
+    status.hidden=false;status.textContent='Submitting your reservation…';
+    startTimeout(()=>{
+      button.disabled=false;
+      status.textContent='We could not confirm your reservation. Please check your email or contact us before trying again.';
+    });
+  });
+  window.addEventListener('message',function(event){
+    if(event.source!==iframe.contentWindow||!waiting)return;
+    const result=event.data;
+    if(!result||typeof result!=='object'||typeof result.success!=='boolean')return;
+    clearTimeout(timer);waiting=false;
+    if(pendingAction==='reservation'){
+      button.disabled=false;
+      if(!result.success){status.hidden=false;status.textContent='Reservation not saved: '+(result.error||'Please try again.');return;}
+      reservation={
+        id:result.reservationId,
+        token:result.changeToken,
+        first:document.getElementById('firstName').value.trim(),
+        count:Number(count.value)||1,
+        method:form.querySelector('input[name="payment_method"]:checked').value
+      };
+      form.hidden=true;
+      panel.querySelector('h2').hidden=true;
+      const intro=panel.querySelector('h2 + p');if(intro)intro.hidden=true;
+      showThanks();
+    } else if(pendingAction==='change_payment'){
+      if(result.success&&result.action==='change_payment'){
+        reservation.method=result.paymentMethod;
+        showThanks();
+      } else {
+        showThanks();
+        const note=el('p','Payment method was not updated: '+(result.error||'Please contact us.'),'notice');
+        thanks.prepend(note);
+      }
+    }
+  });
 })();
 </script>
 
