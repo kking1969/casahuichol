@@ -491,7 +491,6 @@
       f.submit();f.remove();
       startTimeout(()=>{save.disabled=false;feedback.textContent='We could not confirm the change. Please try again or contact us.';});
     });
-    thanks.appendChild(el('p','Please include your name or reservation ID with your payment. Once payment is verified, you should receive a ticket confirmation within 24 hours.'));
     thanks.appendChild(el('p','Unable to pay? Please contact us as soon as possible so we can assist you or release the tickets for someone else.'));
     thanks.appendChild(el('p','A reservation summary has been sent to your email.','note'));
     thanks.hidden=false;
