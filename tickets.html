@@ -455,43 +455,50 @@
     details.removeAttribute('id');
     details.hidden=false;
     thanks.appendChild(details);
-    const change=el('button','Change Payment Method');
-    change.type='button';
-    change.style.marginTop='12px';
-    thanks.appendChild(change);
     const chooser=el('div');
-    chooser.hidden=true;
-    chooser.style.marginTop='12px';
+    chooser.style.marginTop='18px';
+    const label=el('label','Change payment method:');
+    label.style.display='block';
+    label.style.marginBottom='8px';
     const select=el('select');
-    select.setAttribute('aria-label','New payment method');
+    select.setAttribute('aria-label','Change payment method');
     methods.forEach(m=>{
       const opt=el('option',m);opt.value=m;select.appendChild(opt);
     });
     select.value=reservation.method;
-    chooser.appendChild(select);
-    const save=el('button','Save Payment Method');
-    save.type='button';
-    save.style.marginTop='10px';
-    chooser.appendChild(save);
+    label.appendChild(select);
+    chooser.appendChild(label);
     const feedback=el('p','','note');
     feedback.setAttribute('role','status');
     chooser.appendChild(feedback);
     thanks.appendChild(chooser);
-    change.addEventListener('click',()=>{chooser.hidden=!chooser.hidden;});
-    save.addEventListener('click',()=>{
-      if(waiting)return;
-      if(select.value===reservation.method){chooser.hidden=true;return;}
+    select.addEventListener('change',()=>{
+      if(waiting){select.value=reservation.method;return;}
+      if(select.value===reservation.method)return;
       pendingMethod=select.value;
       const f=document.createElement('form');
       f.method='POST';f.action=form.action;f.target=iframe.name;
       const fields={action:'change_payment',reservation_id:reservation.id,change_token:reservation.token,payment_method:pendingMethod};
       Object.keys(fields).forEach(k=>{const input=document.createElement('input');input.type='hidden';input.name=k;input.value=fields[k];f.appendChild(input);});
       document.body.appendChild(f);
-      waiting=true;pendingAction='change_payment';save.disabled=true;feedback.textContent='Saving your new payment method…';
+      waiting=true;pendingAction='change_payment';select.disabled=true;
+      feedback.textContent='Updating your payment method…';
       f.submit();f.remove();
-      startTimeout(()=>{save.disabled=false;feedback.textContent='We could not confirm the change. Please try again or contact us.';});
+      startTimeout(()=>{
+        select.disabled=false;
+        select.value=reservation.method;
+        feedback.textContent='We could not confirm the change. Please try again or contact us.';
+      });
     });
-    thanks.appendChild(el('p','Unable to pay? Please contact us as soon as possible so we can assist you or release the tickets for someone else.'));
+    const paymentHelp=el('p');
+    paymentHelp.appendChild(document.createTextNode('Having trouble completing your payment? Please '));
+    const contactLink=document.createElement('a');
+    contactLink.href='contact.html';
+    contactLink.className='gold-link';
+    contactLink.textContent='contact us';
+    paymentHelp.appendChild(contactLink);
+    paymentHelp.appendChild(document.createTextNode(' as soon as possible. We’ll be happy to help you complete your payment or make other arrangements for your reservation.'));
+    thanks.appendChild(paymentHelp);
     thanks.appendChild(el('p','A reservation summary has been sent to your email.','note'));
     thanks.hidden=false;
     thanks.scrollIntoView({behavior:'smooth',block:'start'});
