@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -49,7 +48,8 @@
       <input
         type="hidden"
         name="_subject"
-        value="La Experiencia Dixeebe - Website Contact"
+        id="contact-email-subject"
+        value="QUESTION-La Experiencia Dixeebe"
       >
 
       <input
@@ -63,6 +63,15 @@
         name="_template"
         value="table"
       >
+
+      <label>
+        What can we help you with?
+        <select name="reason" id="contact-reason" required>
+          <option value="" selected disabled>Select a reason</option>
+          <option value="General Question">General Question</option>
+          <option value="Issue With Payment">Issue With Payment</option>
+        </select>
+      </label>
 
       <label>
         Your Name
@@ -115,6 +124,22 @@
 </footer>
 
 <script src="shared-header.js"></script>
+<script>
+  (function () {
+    const reason = document.getElementById('contact-reason');
+    const subject = document.getElementById('contact-email-subject');
+    const form = reason.closest('form');
+
+    function updateSubject() {
+      subject.value = reason.value === 'Issue With Payment'
+        ? 'PAYMENT ISSUE -La Experiencia Dixeebe'
+        : 'QUESTION-La Experiencia Dixeebe';
+    }
+
+    reason.addEventListener('change', updateSubject);
+    form.addEventListener('submit', updateSubject);
+  })();
+</script>
 
 </body>
 </html>
