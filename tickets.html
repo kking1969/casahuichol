@@ -1,575 +1,219 @@
+Javascript
+const SHEET_NAME = "Reservations";
+const HEADERS = [
+  "Reservation ID",
+  "Date",
+  "First Name",
+  "Last Name",
+  "Email",
+  "Phone",
+  "Tickets",
+  "Payment Method",
+  "Amount Due MXN",
+  "Amount Collected MXN",
+  "Status",
+  "Checked In",
+  "Notes"
+];
 
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0a1b34">
-<title>Buy Event Tickets | La Experiencia Dixeebe</title>
-<link rel="stylesheet" href="style.css">
-
-<style>
-.event-information{text-align:center;margin:24px 0}
-.event-information p{margin:8px 0}
-.event-presenter{color:#e7b76d;font-size:23px}
-.event-price{color:#e7b76d;font-size:25px;font-weight:bold}
-
-.ticket-options{max-width:720px;margin:28px auto}
-.ticket-options .panel{margin:20px 0}
-.ticket-options h2,.ticket-options h3{color:#e7b76d}
-
-.ticket-options label.field{
-  display:block;
-  margin:14px 0 6px
+function setupReservations() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) sheet = ss.insertSheet(SHEET_NAME);
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, HEADERS.length)
+      .setFontWeight("bold")
+      .setBackground("#0a1b34")
+      .setFontColor("#e7b76d");
+  }
 }
 
-.ticket-options input:not([type=radio]):not([type=checkbox]),
-.ticket-options select,
-.ticket-options textarea{
-  width:100%;
-  box-sizing:border-box;
-  padding:12px;
-  border:1px solid #b78b4d;
-  border-radius:6px;
-  font:inherit;
-  background:#fff;
-  color:#14233a
+function getSheet() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    throw new Error("Reservations sheet not found.");
+  }
+  return sheet;
 }
 
-.ticket-options .payment-choice{
-  display:block;
-  padding:14px;
-  border:1px solid rgba(231,183,109,.4);
-  border-radius:8px;
-  margin:10px 0;
-  cursor:pointer
+function jsonResponse(data) {
+  return ContentService
+    .createTextOutput(JSON.stringify(data))
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-.ticket-options .payment-choice input{
-  margin-right:9px;
-  accent-color:#e7b76d
+function doPost(e) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  
+  try {
+    const data = e.parameter && e.parameter.first_name ? e.parameter : JSON.parse(e.postData.contents);
+    const sheet = getSheet();
+
+    const first = String(data.first_name || "").trim();
+    const last = String(data.last_name || "").trim();
+    const email = String(data.email || "").trim();
+    const phone = String(data.phone || "").trim();
+    const tickets = Number(data.number_of_guests);
+    const method = String(data.payment_method || "");
+    const notes = String(data.additional_guests_or_notes || data.notes || "");
+
+    const allowedMethods = [
+      "Kapital Bank SPEI",
+      "Venmo",
+      "WILL CALL - Pay at Door"
+    ];
+
+    if (!first || !last || !email ||
+        !Number.isInteger(tickets) ||
+        tickets < 1 || tickets > 10 ||
+        !allowedMethods.includes(method)) {
+      return jsonResponse({
+        success: false,
+        error: "Invalid reservation information."
+      });
+    }
+
+    const id = Utilities.getUuid().slice(0, 8).toUpperCase();
+
+    // 1. Save reservation to the spreadsheet first
+    sheet.appendRow([
+      id,
+      new Date(),
+      first,
+      last,
+      email,
+      phone,
+      tickets,
+      method,
+      tickets * 1000,
+      0,
+      "Pending",
+      "No",
+      notes
+    ]);
+
+    let emailSent = false;
+    
+    // 2. Try sending confirmation email (Combined recipient + BCC to avoid rate limits)
+    try {
+      sendReservationEmails(data, id);
+      emailSent = true;
+    } catch (emailError) {
+      console.error("Confirmation email failed: " + emailError);
+    }
+
+    return jsonResponse({
+      success: true,
+      reservationId: id,
+      emailSent: emailSent
+    });
+
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      error: error.message
+    });
+  } finally {
+    lock.releaseLock();
+  }
 }
 
-.ticket-options .payment-choice:has(input:checked){
-  border-color:#e7b76d;
-  background:rgba(231,183,109,.09)
-}
-
-.ticket-total{
-  color:#e7b76d;
-  font-size:25px;
-  font-weight:bold;
-  margin:18px 0
-}
-
-.payment-instructions{
-  padding:15px;
-  border:1px solid rgba(231,183,109,.4);
-  border-radius:8px;
-  margin:18px 0
-}
-
-.payment-instructions[hidden]{display:none}
-.payment-instructions p{overflow-wrap:anywhere}
-
-.ticket-options button{
-  padding:14px 22px;
-  border:0;
-  border-radius:6px;
-  background:#e7b76d;
-  color:#0a1b34;
-  font:700 17px Georgia,serif;
-  cursor:pointer
-}
-
-.ticket-options button:disabled{
-  opacity:.65;
-  cursor:wait
-}
-
-.notice{
-  border:1px solid #e7b76d;
-  border-radius:8px;
-  padding:15px;
-  margin:16px 0
-}
-
-.notice[hidden]{display:none}
-
-.experience-includes{
-  max-width:720px;
-  margin:28px auto;
-  padding:24px;
-  border:1px solid rgba(231,183,109,.4);
-  border-radius:10px;
-  background:rgba(231,183,109,.05)
-}
-
-.experience-includes h2{
-  color:#e7b76d;
-  text-align:center;
-  margin-top:0
-}
-
-.experience-includes .experience-item{
-  margin:18px 0;
-  line-height:1.65
-}
-
-.experience-includes .experience-ending{
-  text-align:center;
-  color:#e7b76d;
-  font-size:19px;
-  font-weight:bold;
-  margin-top:24px
-}
-</style>
-</head>
-
-<body>
-
-<header class="top">
-  <a class="brand" href="index.html">LA EXPERIENCIA DIXEEBE</a>
-  <details class="nav">
-    <summary>MENU</summary>
-    <nav class="menu" aria-label="Main navigation">
-      <a href="index.html">Home</a>
-      <a href="casa-huichol.html">Casa Huichol</a>
-      <a href="location.html">Location / Directions</a>
-      <a href="tickets.html">Buy Event Tickets</a>
-      <a href="contact.html">Contact Us</a>
-    </nav>
-  </details>
-</header>
-
-<main class="content">
-
-  <div class="eyebrow">November 28, 2026</div>
-  <h1>Buy Event Tickets</h1>
-  <div class="rule"></div>
-
-  <div class="event-information">
-    <p class="event-presenter">
-      Presented by La Experiencia Dixeebe
-    </p>
-    <p>
-      <a class="gold-link" href="casa-huichol.html">
-        Casa Huichol Fundraiser
-      </a>
-    </p>
-  </div>
-
-  <p>
-    Join us for an evening of ancestral mezcal,
-    live music, and mixology at Vista Sión in Sayulita.
-  </p>
-
-  <div class="event-information">
-    <p>📅 Saturday, November 28, 2026</p>
-    <p>🕒 Doors open at 7:00 PM</p>
-    <p class="event-price">
-      🎟️ $1,000 MXN / $50 USD per person
-    </p>
-  </div>
-
-  <!-- EVENT EXPERIENCE DETAILS -->
-
-  <section class="experience-includes">
-
-    <h2>A Taste of the Experience</h2>
-
-    <p style="text-align:center;">
-      Your event ticket includes three special tastes
-      to kick off an unforgettable evening!
-    </p>
-
-    <div class="experience-item">
-      🍹 <strong>Your choice of one handcrafted cocktail
-      or an ice-cold beer</strong> — the perfect way
-      to kick off the evening.
-    </div>
-
-    <div class="experience-item">
-      🥃 <strong>One shot of freshly distilled
-      ancestral mezcal</strong> — straight from our
-      live still. A rare opportunity to taste mezcal
-      at its freshest!
-    </div>
-
-    <div class="experience-item">
-      🌮 <strong>One handmade quesadilla with
-      chapulines</strong> — a delicious taste of
-      traditional Mexican cuisine, generously
-      provided by our sponsor,
-      <strong>Restaurante Anita</strong>.
-    </div>
-
-    <p class="experience-ending">
-      Three authentic tastes, one unforgettable evening!
-    </p>
-
-    <p style="text-align:center;">
-      And that's just the beginning — enjoy live music,
-      culture, community, and the magic of mezcal
-      in Sayulita.
-    </p>
-
-  </section>
-
-  <section class="ticket-options">
-    <div class="panel">
-
-      <h2>Reserve Your Event Tickets</h2>
-
-      <p>
-        Choose your payment method, complete or initiate your payment,
-        then submit your reservation. We will email you a reservation
-        summary and confirm your tickets after verifying payment.
-      </p>
-
-
-
-      <p>
-        Thank you for supporting
-        <a class="gold-link" href="casa-huichol.html">
-          Casa Huichol
-        </a>
-        and its mission of supporting Wixárika families,
-        culture, and traditions. We look forward to
-        spending the evening together as we celebrate
-        the start of the season, our community,
-        and a night of fun!
-      </p>
-
-      <form
-        id="ticketForm"
-        action="https://script.google.com/macros/s/AKfycby8mIEt1e7DYdxbQOFlXzl12vEe1b7B_pIz-gAZ7XthE8dpnO_YipJtotHb6pObPUoxoA/exec"
-        method="POST"
-        target="reservationResponse"
-      >
-
-        <label class="field" for="firstName">
-          First Name *
-        </label>
-        <input
-          id="firstName"
-          name="first_name"
-          autocomplete="given-name"
-          maxlength="80"
-          required
-        >
-
-        <label class="field" for="lastName">
-          Last Name *
-        </label>
-        <input
-          id="lastName"
-          name="last_name"
-          autocomplete="family-name"
-          maxlength="80"
-          required
-        >
-
-        <label class="field" for="email">
-          Email Address *
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          autocomplete="email"
-          maxlength="200"
-          required
-        >
-
-        <label class="field" for="phone">
-          Phone / WhatsApp
-        </label>
-        <input
-          id="phone"
-          name="phone"
-          type="tel"
-          autocomplete="tel"
-          maxlength="50"
-        >
-
-        <label class="field" for="guestCount">
-          Number of Guests
-        </label>
-        <select
-          id="guestCount"
-          name="number_of_guests"
-          required
-        >
-          <option value="1">1 guest</option>
-          <option value="2">2 guests</option>
-          <option value="3">3 guests</option>
-          <option value="4">4 guests</option>
-          <option value="5">5 guests</option>
-          <option value="6">6 guests</option>
-          <option value="7">7 guests</option>
-          <option value="8">8 guests</option>
-          <option value="9">9 guests</option>
-          <option value="10">10 guests</option>
-        </select>
-
-        <p class="ticket-total" id="ticketTotal">
-          Total: $1,000 MXN / $50 USD
-        </p>
-
-        <h2>Choose Payment Method</h2>
-        <p>Select how you will pay, then follow the instructions below.</p>
-
-        <label class="payment-choice">
-          <input
-            type="radio"
-            name="payment_method"
-            value="Kapital Bank SPEI"
-            checked
-            required
-          >
-          Kapital Bank — Bank Transfer (SPEI)
-        </label>
-
-        <label class="payment-choice">
-          <input
-            type="radio"
-            name="payment_method"
-            value="Venmo"
-          >
-          <a
-            class="gold-link"
-            href="https://venmo.com/code?user_id=2849738105815040365&amp;created=1794245424"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Venmo</a>
-        </label>
-
-        <label class="payment-choice">
-          <input
-            type="radio"
-            name="payment_method"
-            value="Wise"
-          >
-          <a
-            class="gold-link"
-            href="https://wise.com/pay/me/kimn207"
-            target="_blank"
-            rel="noopener noreferrer"
-          >Wise</a>
-        </label>
-
-        <!-- KAPITAL BANK DETAILS -->
-
-        <div class="payment-instructions" id="bankInfo" hidden>
-
-          <h3>Kapital Bank Transfer (SPEI)</h3>
-
-          <p>
-            Transfer the amount shown above using:
-          </p>
-
-          <p>
-            <strong>Name:</strong> Kimberly Neeb<br>
-            <strong>Account:</strong>
-            <code>008996420036</code><br>
-            <strong>CLABE:</strong>
-            <code>128578089964200368</code>
-          </p>
-
-          <p>
-            Please use your first and last name as the
-            transfer reference so we can identify your
-            payment. Admission is confirmed after
-            payment is verified.
-          </p>
-
-        </div>
-
-        <!-- VENMO DETAILS -->
-        <div class="payment-instructions" id="venmoInfo" hidden>
-          <h3>Pay with Venmo</h3>
-          <p>
-            Click
-            <a class="gold-link"
-               href="https://venmo.com/code?user_id=2849738105815040365&amp;created=1794245424"
-               target="_blank" rel="noopener noreferrer">Pay with Venmo</a>
-            to complete your payment.
-          </p>
-          <p>
-            Please include your first and last name in the payment note
-            so we can match your payment to your reservation.
-          </p>
-          <p>After sending payment, return to this page, check the payment acknowledgment box, and submit your reservation.</p>
-        </div>
-
-        <!-- WISE DETAILS -->
-        <div class="payment-instructions" id="wiseInfo" hidden>
-          <h3>Pay with Wise</h3>
-          <p>
-            Click
-            <a class="gold-link"
-               href="https://wise.com/pay/me/kimn207"
-               target="_blank" rel="noopener noreferrer">Pay with Wise</a>
-            to complete your payment.
-          </p>
-          <p>
-            Please include your first and last name in the payment reference
-            so we can match your payment to your reservation.
-          </p>
-          <p>After sending payment, return to this page, check the payment acknowledgment box, and submit your reservation.</p>
-        </div>
-
-        <label class="field" for="notes">
-          Additional Guest Names or Notes (optional)
-        </label>
-        <textarea
-          id="notes"
-          name="additional_guests_or_notes"
-          rows="3"
-          maxlength="1500"
-        ></textarea>
-
-        <p class="note">
-          Please enter the first and last name you'll
-          use at check-in. Your reservation will remain pending
-          until we verify the payment in the account you selected.
-        </p>
-
-        <label class="payment-choice" for="paymentAcknowledged">
-          <input
-            id="paymentAcknowledged"
-            type="checkbox"
-            name="payment_acknowledged"
-            value="Yes"
-            required
-          >
-          I confirm that I have initiated or completed my payment
-          using the selected payment method.
-        </label>
-        <p class="note">
-          Checking this box does not confirm receipt of funds.
-          Your tickets will be confirmed after we verify your payment.
-        </p>
-
-        <button id="submitButton" type="submit">
-          Submit Reservation
-        </button>
-
-        <p
-          id="submitStatus"
-          class="notice"
-          role="status"
-          aria-live="polite"
-          hidden
-        ></p>
-
-      </form>
-
-      <iframe
-        name="reservationResponse"
-        id="reservationResponse"
-        title="Reservation submission response"
-        hidden
-      ></iframe>
-
-    </div>
-  </section>
-
-  <p class="note">
-    Questions or need to cancel? Please use our
-    <a class="gold-link" href="contact.html">
-      Contact Us
-    </a>
-    page.
-  </p>
-
-</main>
-
-<footer>
-  November 28, 2026 · Vista Sión, Sayulita ·
-  Fundraiser for Casa Huichol
-</footer>
-
-<script>
-(function(){
-  'use strict';
-
-  const form=document.getElementById('ticketForm');
-  const count=document.getElementById('guestCount');
-
-  const panels={
-    'Kapital Bank SPEI':document.getElementById('bankInfo'),
-    'Venmo':document.getElementById('venmoInfo'),
-    'Wise':document.getElementById('wiseInfo')
-  };
-
-  const status=document.getElementById('submitStatus');
-  const button=document.getElementById('submitButton');
-
-  let submitted=false;
-
-  function update(){
-    const n=Number(count.value)||1;
-
-    document.getElementById('ticketTotal').textContent=
-      'Total: $'+(n*1000).toLocaleString('en-US')+
-      ' MXN / $'+(n*50).toLocaleString('en-US')+
-      ' USD';
-
-    const selected=form.querySelector(
-      'input[name="payment_method"]:checked'
-    );
-    const method=selected ? selected.value : null;
-
-    Object.keys(panels).forEach(k=>{
-      panels[k].hidden=k!==method;
+function doGet(e) {
+  try {
+    const sheet = getSheet();
+    const rows = sheet.getDataRange().getValues().slice(1);
+
+    const reservations = rows
+      .filter(row => row[0])
+      .map(row => ({
+        id: String(row[0]),
+        firstName: String(row[2]),
+        lastName: String(row[3]),
+        tickets: Number(row[6]) || 0,
+        paymentMethod: String(row[7]),
+        amountDue: Number(row[8]) || 0,
+        amountCollected: Number(row[9]) || 0,
+        status: String(row[10]),
+        checkedIn: String(row[11])
+      }));
+
+    const callback = String((e && e.parameter && e.parameter.callback) || "");
+    const result = {
+      success: true,
+      reservations: reservations
+    };
+
+    if (callback) {
+      if (!/^[a-zA-Z_$][\w$]*$/.test(callback)) {
+        return jsonResponse({
+          success: false,
+          error: "Invalid callback"
+        });
+      }
+      return ContentService
+        .createTextOutput(callback + "(" + JSON.stringify(result) + ");")
+        .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+
+    return jsonResponse(result);
+  } catch (error) {
+    return jsonResponse({
+      success: false,
+      error: error.message
     });
   }
+}
 
-  count.addEventListener('change',update);
+function sendReservationEmails(data, reservationId) {
+  const first = String(data.first_name || "").trim();
+  const last = String(data.last_name || "").trim();
+  const email = String(data.email || "").trim();
+  const tickets = Number(data.number_of_guests);
+  const method = String(data.payment_method || "");
+  const total = tickets * 1000;
 
-  form.querySelectorAll(
-    'input[name="payment_method"]'
-  ).forEach(r=>r.addEventListener('change',function(){
-    document.getElementById('paymentAcknowledged').checked=false;
-    update();
-  }));
+  const subject = "La Experiencia Dixeebe - Reservation " + reservationId;
 
-  update();
+  const message =
+    "Thank you for your reservation!\n\n" +
+    "LA EXPERIENCIA DIXEEBE\n" +
+    "Saturday, November 28, 2026\n" +
+    "Doors open: 7:00 PM\n" +
+    "Location: Vista Sión, Sayulita\n\n" +
+    "Reservation ID: " + reservationId + "\n" +
+    "Guest name: " + first + " " + last + "\n" +
+    "Tickets reserved: " + tickets + "\n" +
+    "Payment method: " + method + "\n" +
+    "Total: $" + total.toLocaleString("en-US") + " MXN\n\n" +
+    (method === "WILL CALL - Pay at Door"
+      ? "YOUR TICKETS ARE BEING HELD FOR YOU.\n" +
+        "Because tickets are limited, please make every effort to attend.\n" +
+        "Please pay the full balance at the door.\n" +
+        "Your first and last name will be used for admission.\n" +
+        "After payment, you will receive your food and drink tickets.\n\n"
+      : "Your reservation has been received. " +
+        "Admission is confirmed after payment is verified.\n" +
+        "Your first and last name will be used for admission.\n\n") +
+    "We look forward to seeing you!";
 
-  form.addEventListener('submit',function(){
-    submitted=true;
-    button.disabled=true;
-    status.hidden=false;
-
-    status.textContent=
-      'Sending your reservation request… Please do not submit twice.';
-
-    setTimeout(function(){
-      if(button.disabled){
-        button.disabled=false;
-        status.textContent=
-          'Your request was sent for processing. Please check your email (including spam) for the reservation summary. If you do not receive one, contact the organizer before submitting again.';
-      }
-    },10000);
+  // Send single API call to guest and BCC yourself to prevent rate limiting/dropping
+  MailApp.sendEmail({
+    to: email,
+    bcc: "king@kkcmpartners.com",
+    subject: subject,
+    body: message,
+    replyTo: "king@kkcmpartners.com",
+    name: "La Experiencia Dixeebe"
   });
+}
 
-  document.getElementById('reservationResponse')
-    .addEventListener('load',function(){
-      if(!submitted)return;
-
-      button.disabled=false;
-      status.hidden=false;
-
-      status.textContent=
-        'Your request was sent for processing. Check your email for a reservation summary. If no email arrives, contact the organizer before trying again.';
-    });
-
-})();
-</script>
-
-<script src="shared-header.js"></script>
-
-</body>
-</html>
+function testEmailPermission() {
+  MailApp.sendEmail(
+    "king@kkcmpartners.com",
+    "Dixeebe Email Permission Test",
+    "Success! The ticket reservation system can now send emails."
+  );
+}
