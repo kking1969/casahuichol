@@ -143,8 +143,6 @@
 </header>
 
 <main class="content">
-
-  <div class="eyebrow">November 28, 2026</div>
   <h1>Buy Event Tickets</h1>
   <div class="rule"></div>
 
@@ -156,50 +154,6 @@
     </p>
   </div>
 
-  <!-- EVENT EXPERIENCE DETAILS -->
-
-  <section class="experience-includes">
-
-    <h2>A Taste of the Experience</h2>
-
-    <p style="text-align:center;">
-      Your event ticket includes three special tastes
-      to kick off an unforgettable evening!
-    </p>
-
-    <div class="experience-item">
-      🍹 <strong>Your choice of one handcrafted cocktail
-      or an ice-cold beer</strong> — the perfect way
-      to kick off the evening.
-    </div>
-
-    <div class="experience-item">
-      🥃 <strong>One shot of freshly distilled
-      ancestral mezcal</strong> — straight from our
-      live still. A rare opportunity to taste mezcal
-      at its freshest!
-    </div>
-
-    <div class="experience-item">
-      🌮 <strong>One handmade quesadilla with
-      chapulines</strong> — a delicious taste of
-      traditional Mexican cuisine, generously
-      provided by our sponsor,
-      <strong>Restaurante Anita</strong>.
-    </div>
-
-    <p class="experience-ending">
-      Three authentic tastes, one unforgettable evening!
-    </p>
-
-    <p style="text-align:center;">
-      And that's just the beginning — enjoy live music,
-      culture, community, and the magic of mezcal
-      in Sayulita.
-    </p>
-
-  </section>
-
   <section class="ticket-options">
     <div class="panel">
 
@@ -208,8 +162,6 @@
       <p>
         Choose your payment method and reserve your tickets.
         Please make your payment immediately after submitting the form.
-        We will email you a reservation summary, then confirm your tickets
-        once payment has been verified.
       </p>
 
 
@@ -395,9 +347,12 @@
         ></textarea>
 
         <p class="note">
-          Please enter the first and last name you'll
-          use at check-in. Your reservation will remain pending
-          until we verify the payment in the account you selected.
+          <strong>Important Payment Information</strong><br>
+          When making your payment, include your first and last name in the
+          payment note or reference so we can identify it.
+          Your reservation will remain pending until we verify your payment.
+          Once verified, you should receive an email confirming your tickets
+          within 24 hours.
         </p>
 
         <label class="payment-choice" for="paymentAcknowledged">
@@ -411,12 +366,9 @@
           I confirm that I will make my payment using the selected
           payment method immediately after submitting this reservation.
         </label>
-        <p class="note">
-          Once your payment has been verified, you should receive an email
-          confirming your tickets within 24 hours.
-        </p>
 
-        <button id="submitButton" type="submit">
+
+        <button id="submitButton" type="submit" disabled>
           Reserve My Tickets
         </button>
 
@@ -441,11 +393,9 @@
   </section>
 
   <p class="note">
-    Questions or need to cancel? Please use our
-    <a class="gold-link" href="contact.html">
-      Contact Us
-    </a>
-    page.
+    Having trouble submitting your reservation or making a payment?
+    Please <a class="gold-link" href="contact.html">contact us here</a>
+    and we’ll be happy to help.
   </p>
 
 </main>
@@ -484,6 +434,7 @@
     document.getElementById('ticketTotal').textContent='Total: $'+(n*1000).toLocaleString('en-US')+' MXN / $'+(n*50).toLocaleString('en-US')+' USD';
     const selected=form.querySelector('input[name="payment_method"]:checked');
     methods.forEach(m=>panels[m].hidden=!selected||selected.value!==m);
+    if(!waiting)button.disabled=!selected;
   }
   count.addEventListener('change',update);
   form.querySelectorAll('input[name="payment_method"]').forEach(r=>r.addEventListener('change',update));
@@ -550,8 +501,14 @@
     clearTimeout(timer);
     timer=setTimeout(()=>{if(!waiting)return;waiting=false;callback();},20000);
   }
-  form.addEventListener('submit',function(){
-    if(waiting)return;
+  form.addEventListener('submit',function(event){
+    if(!form.querySelector('input[name="payment_method"]:checked')){
+      event.preventDefault();
+      status.hidden=false;
+      status.textContent='Please select a payment method before submitting your reservation.';
+      return;
+    }
+    if(waiting){event.preventDefault();return;}
     waiting=true;pendingAction='reservation';button.disabled=true;
     status.hidden=false;status.textContent='Submitting your reservation…';
     startTimeout(()=>{
