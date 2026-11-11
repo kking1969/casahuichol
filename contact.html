@@ -6,6 +6,13 @@
   <title>Contact Us | La Experiencia Dixeebe</title>
   <meta name="theme-color" content="#0a1b34">
   <link rel="stylesheet" href="style.css">
+<style>
+  .contact-reason-group{border:0;margin:8px 0 22px;padding:0;min-width:0}
+  .contact-reason-group legend{color:#e7b76d;font:inherit;margin-bottom:12px;padding:0}
+  .contact-reason-choices{display:flex;flex-wrap:wrap;gap:12px 26px;align-items:center}
+  .contact-reason-choice{display:inline-flex!important;align-items:center;gap:9px;width:auto!important;margin:0!important;color:#f6eddc;cursor:pointer}
+  .contact-reason-choice input[type="radio"]{width:18px!important;height:18px!important;min-width:18px;margin:0!important;accent-color:#e7b76d;cursor:pointer}
+</style>
 </head>
 
 <body>
@@ -65,15 +72,6 @@
       >
 
       <label>
-        What can we help you with?
-        <select name="reason" id="contact-reason" required>
-          <option value="" selected disabled>Select a reason</option>
-          <option value="General Question">General Question</option>
-          <option value="Issue With Payment">Issue With Payment</option>
-        </select>
-      </label>
-
-      <label>
         Your Name
         <input
           name="name"
@@ -93,6 +91,20 @@
           maxlength="200"
         >
       </label>
+
+      <fieldset class="contact-reason-group">
+        <legend>What can we help you with?</legend>
+        <div class="contact-reason-choices">
+          <label class="contact-reason-choice">
+            <input type="radio" name="reason" value="General Question" required>
+            <span>General Question</span>
+          </label>
+          <label class="contact-reason-choice">
+            <input type="radio" name="reason" value="Issue With Payment" required>
+            <span>Issue With Payment</span>
+          </label>
+        </div>
+      </fieldset>
 
       <label>
         Message
@@ -126,17 +138,17 @@
 <script src="shared-header.js"></script>
 <script>
   (function () {
-    const reason = document.getElementById('contact-reason');
+    const form = document.querySelector('.form');
     const subject = document.getElementById('contact-email-subject');
-    const form = reason.closest('form');
 
     function updateSubject() {
-      subject.value = reason.value === 'Issue With Payment'
+      const selected = form.querySelector('input[name="reason"]:checked');
+      subject.value = selected && selected.value === 'Issue With Payment'
         ? 'PAYMENT ISSUE -La Experiencia Dixeebe'
         : 'QUESTION-La Experiencia Dixeebe';
     }
 
-    reason.addEventListener('change', updateSubject);
+    form.addEventListener('change', updateSubject);
     form.addEventListener('submit', updateSubject);
   })();
 </script>
