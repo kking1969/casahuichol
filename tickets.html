@@ -576,7 +576,12 @@
     });
   });
   window.addEventListener('message',function(event){
-    if(event.source!==iframe.contentWindow||!waiting)return;
+    // Apps Script may serve its HTML response from a nested Google iframe.
+    // Verify the sender's origin rather than requiring the direct iframe window.
+    const trustedGoogleResponse =
+      event.origin === 'https://script.google.com' ||
+      /^https:\/\/[a-z0-9.-]+\.googleusercontent\.com$/i.test(event.origin);
+    if (!trustedGoogleResponse || !waiting) return;
     const result=event.data;
     if(!result||typeof result!=='object'||typeof result.success!=='boolean')return;
     clearTimeout(timer);waiting=false;
