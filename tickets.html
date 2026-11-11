@@ -23,7 +23,7 @@
   margin:14px 0 6px
 }
 
-.ticket-options input:not([type=radio]),
+.ticket-options input:not([type=radio]):not([type=checkbox]),
 .ticket-options select,
 .ticket-options textarea{
   width:100%;
@@ -222,16 +222,12 @@
       <h2>Reserve Your Event Tickets</h2>
 
       <p>
-        Reserve your tickets first. After submitting your
-        reservation, you will receive a confirmation email.
+        Choose your payment method, complete or initiate your payment,
+        then submit your reservation. We will email you a reservation
+        summary and confirm your tickets after verifying payment.
       </p>
 
-      <p>
-        When you arrive, simply check in at the
-        <strong>front entrance</strong> using the first
-        and last name on your reservation. You'll receive
-        your event ticket and be ready to enjoy the evening!
-      </p>
+
 
       <p>
         Thank you for supporting
@@ -322,6 +318,7 @@
         </p>
 
         <h2>Choose Payment Method</h2>
+        <p>Select how you will pay, then follow the instructions below.</p>
 
         <label class="payment-choice">
           <input
@@ -364,13 +361,12 @@
 
         <!-- KAPITAL BANK DETAILS -->
 
-        <div class="payment-instructions" id="bankInfo">
+        <div class="payment-instructions" id="bankInfo" hidden>
 
           <h3>Kapital Bank Transfer (SPEI)</h3>
 
           <p>
-            Reserve your tickets first. Then transfer
-            the amount due using:
+            Transfer the amount shown above using:
           </p>
 
           <p>
@@ -394,8 +390,7 @@
         <div class="payment-instructions" id="venmoInfo" hidden>
           <h3>Pay with Venmo</h3>
           <p>
-            First, fill out and submit the reservation form above.
-            Then click
+            Click
             <a class="gold-link"
                href="https://venmo.com/code?user_id=2849738105815040365&amp;created=1794245424"
                target="_blank" rel="noopener noreferrer">Pay with Venmo</a>
@@ -405,15 +400,14 @@
             Please include your first and last name in the payment note
             so we can match your payment to your reservation.
           </p>
-          <p>Your ticket will be confirmed via email once your payment has been verified.</p>
+          <p>After sending payment, return to this page, check the payment acknowledgment box, and submit your reservation.</p>
         </div>
 
         <!-- WISE DETAILS -->
         <div class="payment-instructions" id="wiseInfo" hidden>
           <h3>Pay with Wise</h3>
           <p>
-            First, fill out and submit the reservation form above.
-            Then click
+            Click
             <a class="gold-link"
                href="https://wise.com/pay/me/kimn207"
                target="_blank" rel="noopener noreferrer">Pay with Wise</a>
@@ -423,7 +417,7 @@
             Please include your first and last name in the payment reference
             so we can match your payment to your reservation.
           </p>
-          <p>Your ticket will be confirmed via email once your payment has been verified.</p>
+          <p>After sending payment, return to this page, check the payment acknowledgment box, and submit your reservation.</p>
         </div>
 
         <label class="field" for="notes">
@@ -438,9 +432,24 @@
 
         <p class="note">
           Please enter the first and last name you'll
-          use at check-in. Your confirmation email will
-          include your reservation details, payment
-          instructions, number of tickets, and total due.
+          use at check-in. Your reservation will remain pending
+          until we verify the payment in the account you selected.
+        </p>
+
+        <label class="payment-choice" for="paymentAcknowledged">
+          <input
+            id="paymentAcknowledged"
+            type="checkbox"
+            name="payment_acknowledged"
+            value="Yes"
+            required
+          >
+          I confirm that I have initiated or completed my payment
+          using the selected payment method.
+        </label>
+        <p class="note">
+          Checking this box does not confirm receipt of funds.
+          Your tickets will be confirmed after we verify your payment.
         </p>
 
         <button id="submitButton" type="submit">
@@ -508,9 +517,10 @@
       ' MXN / $'+(n*50).toLocaleString('en-US')+
       ' USD';
 
-    const method=form.querySelector(
+    const selected=form.querySelector(
       'input[name="payment_method"]:checked'
-    ).value;
+    );
+    const method=selected ? selected.value : null;
 
     Object.keys(panels).forEach(k=>{
       panels[k].hidden=k!==method;
@@ -521,7 +531,10 @@
 
   form.querySelectorAll(
     'input[name="payment_method"]'
-  ).forEach(r=>r.addEventListener('change',update));
+  ).forEach(r=>r.addEventListener('change',function(){
+    document.getElementById('paymentAcknowledged').checked=false;
+    update();
+  }));
 
   update();
 
