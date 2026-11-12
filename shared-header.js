@@ -54,16 +54,6 @@
       min-width: 0;
     }
 
-    .dixeebe-title {
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(17px, 2vw, 29px);
-      font-weight: normal;
-      color: #e1ae62;
-      text-decoration: none;
-      letter-spacing: 0.04em;
-      line-height: 1.2;
-    }
-
     .dixeebe-subtitle {
       font-family: Georgia, "Times New Roman", serif;
       font-size: clamp(15px, 1.7vw, 23px);
@@ -209,10 +199,6 @@
         height: 65px;
       }
 
-      .dixeebe-title {
-        font-size: 13px;
-      }
-
       .dixeebe-subtitle {
         font-size: 12px;
       }
@@ -235,10 +221,6 @@
       .dixeebe-logo {
         width: 40px;
         height: 55px;
-      }
-
-      .dixeebe-title {
-        font-size: 11px;
       }
 
       .dixeebe-subtitle {
@@ -268,7 +250,7 @@
         <a
           class="dixeebe-logo-link"
           href="index.html"
-          aria-label="La Experiencia Dixeebe Home"
+          aria-label="Home"
         >
           <img
             class="dixeebe-logo"
@@ -278,10 +260,6 @@
         </a>
 
         <div class="dixeebe-header-text">
-
-          <a class="dixeebe-title" href="index.html">
-            LA EXPERIENCIA DIXEEBE
-          </a>
 
           <div class="dixeebe-subtitle">
             An Evening of Mezcal, Music &amp; Culture
