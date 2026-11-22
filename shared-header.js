@@ -344,7 +344,7 @@
 
           <a
             class="dixeebe-social-icon dixeebe-instagram"
-            href="https://www.instagram.com/la_experiencia_dixeebe/"
+            href="https://www.instagram.com/mezcal_and_music/"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Follow us on Instagram"
